@@ -39,6 +39,8 @@ app:
     model: claude-sonnet-4-5-20250514
     max-tokens: 1024
     enabled: ${AI_SUMMARIES_ENABLED:true}
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}
   lifecycle:

@@ -104,6 +104,14 @@ export const handlers = [
       role: "LEAD",
     })
   ),
+  http.post("/api/v1/auth/oauth2/google", () =>
+    HttpResponse.json({
+      token: "mock-jwt-token",
+      memberId: "e0000000-0000-0000-0000-000000000001",
+      name: "Alice Chen",
+      role: "LEAD",
+    })
+  ),
   http.get("/api/v1/teams", () => HttpResponse.json(teams)),
   http.get("/api/v1/teams/:id/members", () => HttpResponse.json(teamMembers)),
   http.get("/api/v1/commits", () => HttpResponse.json([mockCommit])),

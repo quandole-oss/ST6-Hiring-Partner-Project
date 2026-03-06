@@ -10,6 +10,7 @@ interface AuthState {
 interface AuthContextType {
   user: AuthState | null;
   login: (email: string, password: string) => Promise<void>;
+  googleLogin: (credential: string) => Promise<void>;
   logout: () => void;
   demoMode: boolean;
 }
@@ -54,12 +55,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser({ token: data.token, memberId: data.memberId, name: data.name, role: data.role });
   }, []);
 
+  const googleLogin = useCallback(async (credential: string) => {
+    const res = await fetch("/api/v1/auth/oauth2/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ credential }),
+    });
+    if (!res.ok) {
+      throw new Error("Google login failed");
+    }
+    const data = await res.json();
+    setUser({ token: data.token, memberId: data.memberId, name: data.name, role: data.role });
+  }, []);
+
   const logout = useCallback(() => {
     setUser(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, demoMode: DEMO_MODE }}>
+    <AuthContext.Provider value={{ user, login, googleLogin, logout, demoMode: DEMO_MODE }}>
       {children}
     </AuthContext.Provider>
   );
