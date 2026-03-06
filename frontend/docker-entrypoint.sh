@@ -1,4 +1,5 @@
 #!/bin/sh
 # Substitute env vars into nginx config template
-envsubst '${BACKEND_URL}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+export PORT=${PORT:-80}
+envsubst '${BACKEND_URL} ${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 nginx -g 'daemon off;'
