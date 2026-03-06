@@ -111,6 +111,7 @@ public class CommitLifecycleService {
         return saved;
     }
 
+    @Transactional(readOnly = true)
     public List<AuditLogDto> getAuditLog(UUID commitId) {
         return auditLogRepo.findByWeeklyCommitIdOrderByCreatedAtDesc(commitId).stream()
                 .map(a -> new AuditLogDto(
