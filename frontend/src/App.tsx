@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { CommitEditorPage } from "./pages/CommitEditorPage";
 import { ReconciliationPage } from "./pages/ReconciliationPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { PipelinePage } from "./pages/PipelinePage";
 import { RcdoPage } from "./pages/RcdoPage";
 import { LoginPage } from "./pages/LoginPage";
 import { Sidebar } from "./components/layout/Sidebar";
@@ -21,6 +22,7 @@ export default function App() {
                 <Route path="/editor" element={<CommitEditorPage />} />
                 <Route path="/commits/:id" element={<CommitEditorPage />} />
                 <Route path="/commits/:id/reconcile" element={<ReconciliationPage />} />
+                <Route path="/pipeline" element={<PipelinePage />} />
                 <Route path="/dashboard/:teamId" element={<DashboardPage />} />
                 <Route path="/rcdo" element={<RcdoPage />} />
                 <Route path="/settings" element={<SettingsPlaceholder />} />

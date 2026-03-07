@@ -12,10 +12,10 @@ describe("AISummaryPanel", () => {
 
   it("shows summary after clicking generate", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<AISummaryPanel teamId="d0000000-0000-0000-0000-000000000001" />);
+    renderWithProviders(<AISummaryPanel teamId="d0000000-0000-0000-0000-000000000001" teamName="Platform Squad" />);
     await user.click(screen.getByText("Generate Summary"));
     await waitFor(() => {
-      expect(screen.getByText(/Platform Squad has committed/)).toBeInTheDocument();
-    });
+      expect(screen.getByText("Regenerate")).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 });

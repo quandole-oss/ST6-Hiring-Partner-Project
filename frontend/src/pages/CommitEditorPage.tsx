@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   useCommit,
@@ -21,6 +21,7 @@ import { ErrorAlert } from "../components/ErrorAlert";
 import { FibonacciSelector } from "../components/FibonacciSelector";
 import { CarryForwardWarning } from "../components/CarryForwardWarning";
 import { AuditTimeline } from "../components/AuditTimeline";
+import { TaskDetailsModal } from "../components/TaskDetailsModal";
 import { GlowButton } from "../components/animations/GlowButton";
 import { AnimatedNumber } from "../components/animations/AnimatedNumber";
 import { useToast } from "../hooks/useToast";
@@ -195,9 +196,23 @@ function CommitEditor({ commitId }: { commitId: string }) {
   const updateItemFlag = useUpdateItemFlag(commitId);
   const updateItemCategory = useUpdateItemCategory(commitId);
   const { addToast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<CommitItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<CommitItem | null>(null);
+
+  // Deep linking: auto-open TaskDetailsModal from ?openItem=id
+  useEffect(() => {
+    const openItemId = searchParams.get("openItem");
+    if (openItemId && commit) {
+      const found = commit.items.find((i) => i.id === openItemId);
+      if (found) {
+        setSelectedItem(found);
+        setSearchParams({}, { replace: true });
+      }
+    }
+  }, [commit, searchParams, setSearchParams]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [chess, setChess] = useState<ChessCategory | "">("");
@@ -430,6 +445,7 @@ function CommitEditor({ commitId }: { commitId: string }) {
                   item={item}
                   isDraft={isDraft}
                   isLocked={commit.status === "LOCKED"}
+                  onClick={() => setSelectedItem(item)}
                   onEdit={() => handleEdit(item)}
                   onDelete={() => handleDelete(item)}
                   onCategoryChange={
@@ -539,6 +555,16 @@ function CommitEditor({ commitId }: { commitId: string }) {
               setShowStaleWarning(false);
             }}
             onClose={() => setShowStaleWarning(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {selectedItem && (
+          <TaskDetailsModal
+            item={selectedItem}
+            commitStatus={commit.status}
+            onClose={() => setSelectedItem(null)}
           />
         )}
       </AnimatePresence>

@@ -156,9 +156,10 @@ export const handlers = [
       { id: "al-002", commitId: "f0000000-0000-0000-0000-000000000001", previousState: null, newState: null, triggeredBy: "alice@example.com", isManualOverride: false, notes: null, createdAt: "2026-03-02T09:30:00Z", commitItemId: "10000000-0000-0000-0000-000000000001", commitItemTitle: "Design wizard wireframes", actionType: "CATEGORY_CHANGE", oldValue: "TACTICAL", newValue: "STRATEGIC" },
     ])
   ),
-  http.post("/api/v1/commits/:id/override", () =>
-    HttpResponse.json({ ...mockCommit, status: "DRAFT" })
-  ),
+  http.post("/api/v1/commits/:id/override", async ({ request }) => {
+    const body = await request.json() as { targetStatus?: string };
+    return HttpResponse.json({ ...mockCommit, status: body.targetStatus ?? "DRAFT" });
+  }),
   http.get("/api/v1/dashboard/team/:id/summary", () =>
     HttpResponse.json({
       teamId: "d0000000-0000-0000-0000-000000000001",
@@ -166,5 +167,13 @@ export const handlers = [
       summary: "The Platform Squad has committed 8 story points this week with 67% RCDO alignment. No items are currently blocked.",
       generatedAt: "2026-03-06T12:00:00Z",
     })
+  ),
+  http.get("/api/v1/commits/by-outcome/:outcomeId", () =>
+    HttpResponse.json([
+      {
+        ...mockCommit.items[0],
+        weeklyCommitId: mockCommit.id,
+      },
+    ])
   ),
 ];

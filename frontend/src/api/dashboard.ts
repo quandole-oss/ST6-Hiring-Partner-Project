@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./client";
+import { shouldUseMock, getMockSummary } from "../services/aiSummaryService";
 import type { DashboardTeam, AlignmentScore, TeamSummary } from "../types";
 
 export function useTeamDashboard(teamId: string) {
@@ -17,10 +18,13 @@ export function useAlignmentMetrics() {
   });
 }
 
-export function useTeamSummary(teamId: string) {
+export function useTeamSummary(teamId: string, teamName?: string) {
   return useQuery({
     queryKey: ["dashboard", "summary", teamId],
-    queryFn: () => api.get<TeamSummary>(`/dashboard/team/${teamId}/summary`),
+    queryFn: () =>
+      shouldUseMock()
+        ? getMockSummary(teamId, teamName ?? "Team")
+        : api.get<TeamSummary>(`/dashboard/team/${teamId}/summary`),
     enabled: false,
   });
 }

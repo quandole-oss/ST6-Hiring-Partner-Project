@@ -34,6 +34,7 @@ interface Props {
   isDraft?: boolean;
   isLocked?: boolean;
   isReconciled?: boolean;
+  onClick?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   onFlagChange?: (flag: ItemFlag, note?: string) => void;
@@ -46,7 +47,7 @@ function cfBadgeColor(count: number): string {
   return "bg-gray-100 text-gray-600";
 }
 
-export function CommitItemCard({ item, isDraft, isLocked, isReconciled, onEdit, onDelete, onFlagChange, onCategoryChange }: Props) {
+export function CommitItemCard({ item, isDraft, isLocked, isReconciled, onClick, onEdit, onDelete, onFlagChange, onCategoryChange }: Props) {
   const trailColor = item.flaggedStale
     ? "#f59e0b"
     : item.riskFlag === "BLOCKED"
@@ -68,7 +69,7 @@ export function CommitItemCard({ item, isDraft, isLocked, isReconciled, onEdit, 
         persist={persistTrail}
         className={`rounded-xl border border-slate-200 border-l-4 ${CHESS_COLORS[item.chessCategory ?? ""] ?? "border-l-gray-300"} bg-white shadow-sm`}
       >
-        <div className="p-4">
+        <div className={`p-4${onClick ? " cursor-pointer" : ""}`} onClick={onClick}>
           {/* Top row: status + metrics */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
@@ -129,6 +130,7 @@ export function CommitItemCard({ item, isDraft, isLocked, isReconciled, onEdit, 
               onCategoryChange ? (
                 <select
                   value={item.chessCategory}
+                  onClick={(e) => e.stopPropagation()}
                   onChange={(e) => onCategoryChange(e.target.value as ChessCategory)}
                   className={`text-xs font-medium rounded-full px-2.5 py-1 border-none cursor-pointer ${CHESS_BG[item.chessCategory] ?? "bg-gray-100 text-gray-600"}`}
                 >
@@ -163,7 +165,7 @@ export function CommitItemCard({ item, isDraft, isLocked, isReconciled, onEdit, 
             )}
 
             {/* Actions */}
-            <div className="ml-auto flex items-center gap-1">
+            <div className="ml-auto flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
               {isLocked && onFlagChange && (
                 <>
                   <motion.button

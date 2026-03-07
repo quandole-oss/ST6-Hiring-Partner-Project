@@ -168,6 +168,10 @@ public class CommitService {
         return toItemDto(itemRepo.save(item));
     }
 
+    public List<CommitItemDto> getItemsByOutcome(UUID outcomeId) {
+        return itemRepo.findByOutcomeId(outcomeId).stream().map(this::toItemDto).toList();
+    }
+
     WeeklyCommitDto toDto(WeeklyCommit wc) {
         var items = wc.getItems().stream().map(this::toItemDto).toList();
         boolean hasBlocked = wc.getItems().stream().anyMatch(i -> "BLOCKED".equals(i.getRiskFlag()));

@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface CommitItemRepository extends JpaRepository<CommitItem, UUID> {
     List<CommitItem> findByWeeklyCommitIdOrderBySortOrderAsc(UUID weeklyCommitId);
+    List<CommitItem> findByOutcomeId(UUID outcomeId);
 }

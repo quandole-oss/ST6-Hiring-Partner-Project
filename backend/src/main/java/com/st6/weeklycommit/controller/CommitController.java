@@ -72,6 +72,11 @@ public class CommitController {
         return lifecycleService.getAuditLog(id);
     }
 
+    @GetMapping("/by-outcome/{outcomeId}")
+    public List<CommitItemDto> getItemsByOutcome(@PathVariable UUID outcomeId) {
+        return commitService.getItemsByOutcome(outcomeId);
+    }
+
     @GetMapping("/{id}/items")
     public List<CommitItemDto> listItems(@PathVariable UUID id) { return commitService.listItems(id); }
 

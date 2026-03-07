@@ -1,8 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueries, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
 import type {
   WeeklyCommit,
   CommitItem,
+  CommitStatus,
   ChessCategory,
   Reconciliation,
   CreateCommitItemRequest,
@@ -116,4 +117,33 @@ export function useUpdateReconciliation(commitId: string, itemId: string) {
       api.put<Reconciliation>(`/commits/${commitId}/items/${itemId}/reconciliation`, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
   });
+}
+
+export function useOverrideCommit() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { id: string; targetStatus: CommitStatus; notes: string }) =>
+      api.post<WeeklyCommit>(`/commits/${data.id}/override`, {
+        targetStatus: data.targetStatus,
+        notes: data.notes,
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+  });
+}
+
+export function useTeamCommits(memberIds: string[]) {
+  const results = useQueries({
+    queries: memberIds.map((id) => ({
+      queryKey: ["commits", id],
+      queryFn: () => api.get<WeeklyCommit[]>(`/commits?teamMemberId=${id}`),
+      enabled: !!id,
+    })),
+  });
+
+  const isLoading = results.some((r) => r.isLoading);
+  const data = results
+    .filter((r) => r.data)
+    .flatMap((r) => r.data!);
+
+  return { data: memberIds.length > 0 ? data : undefined, isLoading };
 }

@@ -1,6 +1,47 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRallyCries } from "../api/rcdo";
+import { useCommitItemsByOutcome } from "../api/outcomeCommits";
 import { ErrorAlert } from "../components/ErrorAlert";
+
+const CHESS_BG: Record<string, string> = {
+  STRATEGIC: "bg-indigo-50 text-indigo-700",
+  TACTICAL: "bg-emerald-50 text-emerald-700",
+  OPERATIONAL: "bg-amber-50 text-amber-700",
+  MAINTENANCE: "bg-gray-100 text-gray-600",
+};
+
+function OutcomeCommitItems({ outcomeId }: { outcomeId: string }) {
+  const { data: items, isLoading } = useCommitItemsByOutcome(outcomeId);
+  const navigate = useNavigate();
+
+  if (isLoading) return <div className="text-xs text-slate-400 mt-1">Loading linked items...</div>;
+  if (!items || items.length === 0) return <div className="text-xs text-slate-400 mt-1 italic">No linked commit items</div>;
+
+  return (
+    <div className="mt-2 space-y-1">
+      {items.map((item) => (
+        <button
+          key={item.id}
+          className="w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-100 transition-colors group"
+          onClick={() => navigate(`/commits/${item.weeklyCommitId}?openItem=${item.id}`)}
+        >
+          {item.chessCategory && (
+            <span className={`text-[10px] font-medium rounded px-1.5 py-0.5 ${CHESS_BG[item.chessCategory] ?? "bg-gray-100 text-gray-600"}`}>
+              {item.chessCategory.slice(0, 3)}
+            </span>
+          )}
+          <span className="text-sm text-slate-600 group-hover:text-[#0f4c5c] truncate flex-1">
+            {item.title}
+          </span>
+          <svg className="w-3 h-3 text-slate-300 group-hover:text-[#0f4c5c] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export function RcdoPage() {
   const { data: rallyCries, isLoading, isError, error } = useRallyCries();
@@ -55,9 +96,12 @@ export function RcdoPage() {
                       <div className="ml-5 mt-2 space-y-1.5">
                         {obj.description && <p className="text-xs text-slate-400">{obj.description}</p>}
                         {obj.outcomes.map((o) => (
-                          <div key={o.id} className="text-sm text-slate-600 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block shrink-0" />
-                            {o.title}
+                          <div key={o.id}>
+                            <div className="text-sm text-slate-600 flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block shrink-0" />
+                              {o.title}
+                            </div>
+                            <OutcomeCommitItems outcomeId={o.id} />
                           </div>
                         ))}
                         {obj.outcomes.length === 0 && (
