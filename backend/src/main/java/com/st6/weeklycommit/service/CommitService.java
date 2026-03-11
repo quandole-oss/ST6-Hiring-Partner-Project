@@ -28,8 +28,15 @@ public class CommitService {
         this.lifecycleService = lifecycleService;
     }
 
-    public List<WeeklyCommitDto> listCommits(UUID teamMemberId) {
-        return commitRepo.findByTeamMemberId(teamMemberId).stream().map(this::toDto).toList();
+    public List<WeeklyCommitDto> listCommits(UUID teamMemberId, java.time.LocalDate weekStart) {
+        List<WeeklyCommit> commits;
+        if (weekStart != null) {
+            commits = commitRepo.findByTeamMemberIdAndWeekStart(teamMemberId, weekStart)
+                .map(List::of).orElse(List.of());
+        } else {
+            commits = commitRepo.findByTeamMemberId(teamMemberId);
+        }
+        return commits.stream().map(this::toDto).toList();
     }
 
     public WeeklyCommitDto getCommit(UUID id) {

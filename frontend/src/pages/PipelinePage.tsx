@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTeamContext } from "../contexts/TeamContext";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTeams, useTeamMembers } from "../api/teams";
@@ -19,10 +20,10 @@ interface PendingDrop {
 
 export function PipelinePage() {
   const { data: teams, isLoading: teamsLoading, isError: teamsError, error: teamsErr } = useTeams();
-  const [teamId, setTeamId] = useState("");
+  const { teamId, setTeamId, weekStart } = useTeamContext();
   const { data: members } = useTeamMembers(teamId);
   const memberIds = members?.map((m) => m.id) ?? [];
-  const { data: allCommits, isLoading: commitsLoading } = useTeamCommits(memberIds);
+  const { data: allCommits, isLoading: commitsLoading } = useTeamCommits(memberIds, weekStart);
   const overrideCommit = useOverrideCommit();
   const { addToast } = useToast();
   const [pendingDrop, setPendingDrop] = useState<PendingDrop | null>(null);

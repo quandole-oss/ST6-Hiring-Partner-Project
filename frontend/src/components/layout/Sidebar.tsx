@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTeamContext } from "../../contexts/TeamContext";
 
 const navItems = [
   {
@@ -52,6 +53,9 @@ const navItems = [
 ];
 
 export function Sidebar() {
+  const { teamId } = useTeamContext();
+  const dashboardTo = teamId ? `/dashboard/${teamId}` : "/";
+
   return (
     <aside className="fixed top-0 left-0 h-screen w-16 lg:w-56 bg-st6-teal-900 flex flex-col z-20">
       <div className="flex items-center gap-3 px-4 h-16 border-b border-white/10">
@@ -62,10 +66,12 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 py-4 space-y-1">
-        {navItems.map((item) => (
+        {navItems.map((item) => {
+          const to = item.label === "Dashboard" ? dashboardTo : item.to;
+          return (
           <NavLink
-            key={item.to}
-            to={item.to}
+            key={item.label}
+            to={to}
             end={item.end}
             className={({ isActive }) =>
               `group flex items-center gap-3 px-4 py-2.5 text-sm transition-colors relative ${
@@ -89,7 +95,8 @@ export function Sidebar() {
               </>
             )}
           </NavLink>
-        ))}
+          );
+        })}
       </nav>
 
       <div className="px-4 py-4 border-t border-white/10">

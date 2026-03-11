@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -29,7 +30,11 @@ public class CommitController {
     }
 
     @GetMapping
-    public List<WeeklyCommitDto> listCommits(@RequestParam UUID teamMemberId) { return commitService.listCommits(teamMemberId); }
+    public List<WeeklyCommitDto> listCommits(
+            @RequestParam UUID teamMemberId,
+            @RequestParam(required = false) LocalDate weekStart) {
+        return commitService.listCommits(teamMemberId, weekStart);
+    }
 
     @GetMapping("/{id}")
     public WeeklyCommitDto getCommit(@PathVariable UUID id) { return commitService.getCommit(id); }

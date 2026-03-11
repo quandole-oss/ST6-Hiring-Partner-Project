@@ -7,6 +7,7 @@ import App from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ToastProvider } from "./components/Toast";
 import { AuthProvider } from "./contexts/AuthContext";
+import { TeamProvider } from "./contexts/TeamContext";
 import "./index.css";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
@@ -24,9 +25,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <AuthProvider>
-              <ToastProvider>
-                <App />
-              </ToastProvider>
+              <TeamProvider>
+                <ToastProvider>
+                  <App />
+                </ToastProvider>
+              </TeamProvider>
             </AuthProvider>
           </BrowserRouter>
         </QueryClientProvider>

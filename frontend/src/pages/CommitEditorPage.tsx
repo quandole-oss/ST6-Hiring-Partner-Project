@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useTeamContext } from "../contexts/TeamContext";
+import { getCurrentMonday } from "../utils/week";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   useCommit,
@@ -40,16 +42,12 @@ function CommitSelector() {
   const navigate = useNavigate();
   const { addToast } = useToast();
   const { data: teams, isLoading: teamsLoading, isError: teamsError, error: teamsErr } = useTeams();
-  const [teamId, setTeamId] = useState("");
+  const { teamId, setTeamId } = useTeamContext();
   const { data: members } = useTeamMembers(teamId);
   const [memberId, setMemberId] = useState("");
   const { data: commits } = useCommits(memberId);
   const createCommit = useCreateCommit();
-  const [weekStart, setWeekStart] = useState(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - d.getDay() + 1);
-    return d.toISOString().slice(0, 10);
-  });
+  const [weekStart, setWeekStart] = useState(getCurrentMonday);
 
   if (teamsLoading) return <div className="p-8 text-slate-500">Loading...</div>;
   if (teamsError) return <div className="p-8"><ErrorAlert message={(teamsErr as Error)?.message ?? "Failed to load teams"} /></div>;

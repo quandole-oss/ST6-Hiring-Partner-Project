@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTeamContext } from "../contexts/TeamContext";
 import { motion } from "framer-motion";
 import { useTeamDashboard, useAlignmentMetrics } from "../api/dashboard";
 import { useTeams } from "../api/teams";
@@ -16,6 +17,11 @@ import { CategoryDonutChart } from "../components/charts/CategoryDonutChart";
 
 export function DashboardPage() {
   const { teamId } = useParams<{ teamId: string }>();
+  const { setTeamId: setContextTeamId } = useTeamContext();
+
+  useEffect(() => {
+    if (teamId) setContextTeamId(teamId);
+  }, [teamId, setContextTeamId]);
 
   if (teamId) {
     return <DashboardView teamId={teamId} />;
@@ -26,7 +32,8 @@ export function DashboardPage() {
 function TeamSelector() {
   const navigate = useNavigate();
   const { data: teams, isLoading, isError, error } = useTeams();
-  const [selected, setSelected] = useState("");
+  const { teamId: contextTeamId } = useTeamContext();
+  const [selected, setSelected] = useState(contextTeamId);
 
   if (isLoading) return <div className="p-8 text-slate-500">Loading...</div>;
   if (isError) return <div className="p-8"><ErrorAlert message={(error as Error)?.message ?? "Failed to load teams"} /></div>;

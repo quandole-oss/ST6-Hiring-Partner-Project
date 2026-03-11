@@ -1,4 +1,4 @@
-import { useQuery, useQueries, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueries, useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { api } from "./client";
 import type {
   WeeklyCommit,
@@ -11,6 +11,11 @@ import type {
   UpdateReconciliationRequest,
   ItemFlag,
 } from "../types";
+
+function invalidateAll(qc: QueryClient) {
+  qc.invalidateQueries({ queryKey: ["commits"] });
+  qc.invalidateQueries({ queryKey: ["dashboard"] });
+}
 
 export function useCommits(teamMemberId: string) {
   return useQuery({
@@ -33,7 +38,7 @@ export function useCreateCommit() {
   return useMutation({
     mutationFn: (data: { teamMemberId: string; weekStart: string }) =>
       api.post<WeeklyCommit>("/commits", data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+    onSuccess: () => invalidateAll(qc),
   });
 }
 
@@ -42,7 +47,7 @@ export function useCreateItem(commitId: string) {
   return useMutation({
     mutationFn: (data: CreateCommitItemRequest) =>
       api.post<CommitItem>(`/commits/${commitId}/items`, data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+    onSuccess: () => invalidateAll(qc),
   });
 }
 
@@ -51,7 +56,7 @@ export function useUpdateItem(commitId: string) {
   return useMutation({
     mutationFn: (data: { itemId: string; req: UpdateCommitItemRequest }) =>
       api.put<CommitItem>(`/commits/${commitId}/items/${data.itemId}`, data.req),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+    onSuccess: () => invalidateAll(qc),
   });
 }
 
@@ -59,7 +64,7 @@ export function useDeleteItem(commitId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (itemId: string) => api.delete(`/commits/${commitId}/items/${itemId}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+    onSuccess: () => invalidateAll(qc),
   });
 }
 
@@ -67,7 +72,7 @@ export function useLockCommit() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.post<WeeklyCommit>(`/commits/${id}/lock`, {}),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+    onSuccess: () => invalidateAll(qc),
   });
 }
 
@@ -75,7 +80,7 @@ export function useStartReconciliation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.post<WeeklyCommit>(`/commits/${id}/reconcile`, {}),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+    onSuccess: () => invalidateAll(qc),
   });
 }
 
@@ -83,7 +88,7 @@ export function useSubmitReconciliation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.post<WeeklyCommit>(`/commits/${id}/submit`, {}),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+    onSuccess: () => invalidateAll(qc),
   });
 }
 
@@ -92,7 +97,7 @@ export function useUpdateItemFlag(commitId: string) {
   return useMutation({
     mutationFn: (data: { itemId: string; riskFlag: ItemFlag; riskNote?: string }) =>
       api.put<CommitItem>(`/commits/${commitId}/items/${data.itemId}/risk`, { riskFlag: data.riskFlag, riskNote: data.riskNote }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+    onSuccess: () => invalidateAll(qc),
   });
 }
 
@@ -104,7 +109,7 @@ export function useUpdateItemCategory(commitId: string) {
         chessCategory: data.chessCategory,
       }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["commits"] });
+      invalidateAll(qc);
       qc.invalidateQueries({ queryKey: ["audit-log", commitId] });
     },
   });
@@ -115,7 +120,7 @@ export function useUpdateReconciliation(commitId: string, itemId: string) {
   return useMutation({
     mutationFn: (data: UpdateReconciliationRequest) =>
       api.put<Reconciliation>(`/commits/${commitId}/items/${itemId}/reconciliation`, data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+    onSuccess: () => invalidateAll(qc),
   });
 }
 
@@ -127,15 +132,19 @@ export function useOverrideCommit() {
         targetStatus: data.targetStatus,
         notes: data.notes,
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["commits"] }),
+    onSuccess: () => invalidateAll(qc),
   });
 }
 
-export function useTeamCommits(memberIds: string[]) {
+export function useTeamCommits(memberIds: string[], weekStart?: string) {
   const results = useQueries({
     queries: memberIds.map((id) => ({
-      queryKey: ["commits", id],
-      queryFn: () => api.get<WeeklyCommit[]>(`/commits?teamMemberId=${id}`),
+      queryKey: ["commits", id, weekStart],
+      queryFn: () => {
+        const params = new URLSearchParams({ teamMemberId: id });
+        if (weekStart) params.set("weekStart", weekStart);
+        return api.get<WeeklyCommit[]>(`/commits?${params}`);
+      },
       enabled: !!id,
     })),
   });
