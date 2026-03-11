@@ -1,13 +1,15 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../contexts/AuthContext";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 export function LoginPage() {
-  const { login, googleLogin } = useAuth();
+  const { login, googleLogin, user } = useAuth();
   const navigate = useNavigate();
+
+  if (user) return <Navigate to="/" replace />;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);

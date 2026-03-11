@@ -15,9 +15,11 @@ function authHeaders(): Record<string, string> {
 
 function handle401(res: Response) {
   if (DEMO_MODE) return;
-  if (res.status === 401 || res.status === 403) {
+  if (res.status === 401) {
     localStorage.removeItem(STORAGE_KEY);
-    window.location.href = "/login";
+    if (window.location.pathname !== "/login") {
+      window.location.href = "/login";
+    }
   }
 }
 
