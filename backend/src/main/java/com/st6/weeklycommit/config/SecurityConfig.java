@@ -16,6 +16,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,6 +51,10 @@ public class SecurityConfig {
                     .requestMatchers("/actuator/health").permitAll()
                     .requestMatchers("/api/**").authenticated()
                     .anyRequest().permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint((req, res, authEx) ->
+                        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         }
