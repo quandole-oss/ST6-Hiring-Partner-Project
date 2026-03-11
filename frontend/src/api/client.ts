@@ -24,14 +24,19 @@ function handle401(res: Response) {
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: authHeaders(),
-    ...options,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      headers: authHeaders(),
+      ...options,
+    });
+  } catch {
+    throw new Error("Unable to reach the server. Please try again.");
+  }
   if (!res.ok) {
     handle401(res);
     const body = await res.json().catch(() => null);
-    throw new Error(body?.detail ?? `Request failed: ${res.status}`);
+    throw new Error(body?.message ?? body?.detail ?? `Request failed: ${res.status}`);
   }
   return res.json();
 }
