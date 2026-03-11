@@ -1,3 +1,8 @@
+gzip on;
+gzip_types text/plain text/css application/json application/javascript text/xml;
+gzip_min_length 256;
+gzip_vary on;
+
 server {
     listen ${PORT};
     root /usr/share/nginx/html;

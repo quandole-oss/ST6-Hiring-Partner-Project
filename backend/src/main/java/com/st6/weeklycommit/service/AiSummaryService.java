@@ -11,8 +11,10 @@ import com.st6.weeklycommit.model.dto.TeamSummaryDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,8 +33,12 @@ public class AiSummaryService {
         this.dashboardService = dashboardService;
         this.config = config;
         this.objectMapper = objectMapper;
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(5));
+        requestFactory.setReadTimeout(Duration.ofSeconds(15));
         this.restClient = RestClient.builder()
                 .baseUrl("https://api.anthropic.com/v1")
+                .requestFactory(requestFactory)
                 .build();
     }
 

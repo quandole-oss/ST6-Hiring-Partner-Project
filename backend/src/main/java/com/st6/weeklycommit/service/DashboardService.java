@@ -81,7 +81,7 @@ public class DashboardService {
 
     public AlignmentScoreDto getAlignmentMetrics() {
         LocalDate weekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        var allCommits = commitRepo.findAll().stream().filter(c -> c.getWeekStart().equals(weekStart)).toList();
+        var allCommits = commitRepo.findByWeekStartWithItems(weekStart);
         int totalItems = 0;
         int linkedItems = 0;
         for (var commit : allCommits) {
