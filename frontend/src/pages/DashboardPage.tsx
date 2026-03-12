@@ -14,6 +14,7 @@ import { GlowButton } from "../components/animations/GlowButton";
 import { AISummaryPanel } from "../components/AISummaryPanel";
 import { SPBarChart } from "../components/charts/SPBarChart";
 import { CategoryDonutChart } from "../components/charts/CategoryDonutChart";
+import { Combobox } from "../components/ui/Combobox";
 
 export function DashboardPage() {
   const { teamId } = useParams<{ teamId: string }>();
@@ -34,43 +35,99 @@ function TeamSelector() {
   const { data: teams, isLoading, isError, error } = useTeams();
   const { teamId: contextTeamId } = useTeamContext();
   const [selected, setSelected] = useState(contextTeamId);
-
-  if (isLoading) return <div className="p-8 text-slate-500">Loading...</div>;
+  if (isLoading) return (
+    <div className="p-8 flex items-center gap-3 text-slate-400">
+      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+      </svg>
+      Loading teams...
+    </div>
+  );
   if (isError) return <div className="p-8"><ErrorAlert message={(error as Error)?.message ?? "Failed to load teams"} /></div>;
-
+  const teamOptions = (teams ?? []).map((t) => ({ value: t.id, label: t.name }));
+  const selectedTeam = teams?.find((t) => t.id === selected);
   return (
     <motion.div
-      className="p-6 lg:p-8 space-y-6"
-      initial={{ opacity: 0, y: 20 }}
+      className="p-6 lg:p-8 max-w-2xl"
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <div>
-        <h1 className="text-2xl font-bold text-slate-800">Manager Dashboard</h1>
-        <p className="text-sm text-slate-500 mt-1">Select a team to view performance metrics.</p>
-      </div>
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-        <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Team</label>
-        <div className="flex gap-3 mt-2">
-          <select
-            value={selected}
-            onChange={(e) => setSelected(e.target.value)}
-            className="flex-1 rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#0f4c5c]/20 focus:border-[#0f4c5c] outline-none"
-          >
-            <option value="">Select team...</option>
-            {teams?.map((t) => (
-              <option key={t.id} value={t.id}>{t.name}</option>
-            ))}
-          </select>
-          <GlowButton
-            onClick={() => selected && navigate(`/dashboard/${selected}`)}
-            disabled={!selected}
-            className="rounded-lg bg-[#0f4c5c] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#145e6e] disabled:opacity-50"
-            glowColor="rgba(15, 76, 92, 0.5)"
-          >
-            View Dashboard
-          </GlowButton>
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-8">
+        <div
+          className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+          style={{ background: "linear-gradient(135deg, #145e6e 0%, #0d3340 100%)", boxShadow: "0 4px 16px rgba(13,51,64,0.3)" }}
+        >
+          <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+          </svg>
         </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Manager Dashboard</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Select a team to view performance metrics.</p>
+        </div>
+      </div>
+
+      {/* Team selector card */}
+      <div
+        className="bg-white rounded-2xl border border-slate-100 p-6"
+        style={{ boxShadow: "0 4px 16px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)" }}
+      >
+        <div className="mb-4">
+          <Combobox
+            label="Team"
+            options={teamOptions}
+            value={selected}
+            onChange={setSelected}
+            placeholder="Select a team..."
+            searchable={teamOptions.length > 5}
+          />
+        </div>
+
+        {/* Selected team preview */}
+        {selectedTeam && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-3 rounded-xl p-3 mb-4"
+            style={{
+              background: "linear-gradient(135deg, rgba(20,94,110,0.06), rgba(13,51,64,0.03))",
+              border: "1px solid rgba(20,94,110,0.12)"
+            }}
+          >
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: "linear-gradient(135deg, #145e6e, #0d3340)" }}
+            >
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-semibold text-slate-800 text-sm">{selectedTeam.name}</p>
+              <p className="text-xs text-slate-500">Team selected</p>
+            </div>
+            <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold px-2.5 py-1 border border-emerald-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Ready
+            </span>
+          </motion.div>
+        )}
+
+        <GlowButton
+          onClick={() => selected && navigate(`/dashboard/${selected}`)}
+          disabled={!selected}
+          className="w-full rounded-xl py-2.5 text-sm font-bold text-white disabled:opacity-50 flex items-center justify-center gap-2"
+          style={{ background: "linear-gradient(135deg, #f57c00 0%, #e65100 100%)", boxShadow: "0 4px 14px rgba(245,124,0,0.35)" }}
+          glowColor="rgba(245, 124, 0, 0.5)"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3" />
+          </svg>
+          View Dashboard
+        </GlowButton>
       </div>
     </motion.div>
   );

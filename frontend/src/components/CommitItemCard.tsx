@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import type { CommitItem, ChessCategory, ItemFlag } from "../types";
 import { formatEffort, formatImpact } from "../utils/metrics";
@@ -45,6 +46,54 @@ function cfBadgeColor(count: number): string {
   if (count >= 3) return "bg-red-100 text-red-700";
   if (count === 2) return "bg-orange-100 text-orange-700";
   return "bg-gray-100 text-gray-600";
+}
+
+
+const CHESS_OPTIONS: { value: ChessCategory; label: string }[] = [
+  { value: "STRATEGIC", label: "Strategic" },
+  { value: "TACTICAL", label: "Tactical" },
+  { value: "OPERATIONAL", label: "Operational" },
+  { value: "MAINTENANCE", label: "Maintenance" },
+];
+
+function CategoryPicker({ value, onChange }: { value: ChessCategory; onChange: (v: ChessCategory) => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative" onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`text-xs font-semibold rounded-full px-2.5 py-1 flex items-center gap-1 cursor-pointer transition-all ${CHESS_BG[value] ?? "bg-gray-100 text-gray-600"}`}
+      >
+        {value.charAt(0) + value.slice(1).toLowerCase()}
+        <svg className="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div
+          className="absolute z-50 top-full mt-1 left-0 bg-white rounded-xl border border-slate-200 overflow-hidden min-w-[130px]"
+          style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.12)" }}
+        >
+          {CHESS_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => { onChange(opt.value); setOpen(false); }}
+              className={`w-full text-left px-3 py-2 text-xs font-semibold flex items-center gap-2 transition-colors hover:bg-slate-50 ${opt.value === value ? CHESS_BG[opt.value] : "text-slate-600"}`}
+            >
+              {opt.value === value && (
+                <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                </svg>
+              )}
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function CommitItemCard({ item, isDraft, isLocked, isReconciled, onClick, onEdit, onDelete, onFlagChange, onCategoryChange }: Props) {
@@ -128,20 +177,13 @@ export function CommitItemCard({ item, isDraft, isLocked, isReconciled, onClick,
           <div className="flex items-center gap-2 mt-3 flex-wrap">
             {item.chessCategory && (
               onCategoryChange ? (
-                <select
+                <CategoryPicker
                   value={item.chessCategory}
-                  onClick={(e) => e.stopPropagation()}
-                  onChange={(e) => onCategoryChange(e.target.value as ChessCategory)}
-                  className={`text-xs font-medium rounded-full px-2.5 py-1 border-none cursor-pointer ${CHESS_BG[item.chessCategory] ?? "bg-gray-100 text-gray-600"}`}
-                >
-                  <option value="STRATEGIC">Strategic</option>
-                  <option value="TACTICAL">Tactical</option>
-                  <option value="OPERATIONAL">Operational</option>
-                  <option value="MAINTENANCE">Maintenance</option>
-                </select>
+                  onChange={onCategoryChange}
+                />
               ) : (
                 <span className={`text-xs font-medium rounded-full px-2.5 py-1 ${CHESS_BG[item.chessCategory] ?? "bg-gray-100 text-gray-600"}`}>
-                  {item.chessCategory}
+                  {item.chessCategory.charAt(0) + item.chessCategory.slice(1).toLowerCase()}
                 </span>
               )
             )}
