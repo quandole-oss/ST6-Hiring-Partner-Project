@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTeamContext } from "../contexts/TeamContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTeamDashboard, useAlignmentMetrics } from "../api/dashboard";
 import { useTeams } from "../api/teams";
 import { AlignmentScoreDisplay } from "../components/AlignmentScore";
@@ -12,6 +12,8 @@ import { AnimatedProgress } from "../components/animations/AnimatedProgress";
 import { InViewRow } from "../components/animations/InViewRow";
 import { GlowButton } from "../components/animations/GlowButton";
 import { AISummaryPanel } from "../components/AISummaryPanel";
+import { ExportMenu } from "../components/ExportMenu";
+import { ExportSettingsModal } from "../components/ExportSettingsModal";
 import { SPBarChart } from "../components/charts/SPBarChart";
 import { CategoryDonutChart } from "../components/charts/CategoryDonutChart";
 import { Combobox } from "../components/ui/Combobox";
@@ -136,6 +138,7 @@ function TeamSelector() {
 function DashboardView({ teamId }: { teamId: string }) {
   const { data: team, isLoading, isError, error } = useTeamDashboard(teamId);
   const { data: alignment } = useAlignmentMetrics();
+  const [showExportSettings, setShowExportSettings] = useState(false);
 
   if (isLoading) return <div className="p-8 text-slate-500">Loading...</div>;
   if (isError) return <div className="p-8"><ErrorAlert message={(error as Error)?.message ?? "Failed to load dashboard"} /></div>;
@@ -161,6 +164,7 @@ function DashboardView({ teamId }: { teamId: string }) {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Manager Dashboard</h1>
           <p className="text-sm text-slate-500 mt-1">Weekly performance overview and alignment metrics</p>
         </div>
+        <ExportMenu teamId={teamId} onOpenSettings={() => setShowExportSettings(true)} />
       </div>
 
       <AISummaryPanel teamId={teamId} />
@@ -255,6 +259,11 @@ function DashboardView({ teamId }: { teamId: string }) {
           </table>
         </div>
       </div>
+      <AnimatePresence>
+        {showExportSettings && (
+          <ExportSettingsModal teamId={teamId} onClose={() => setShowExportSettings(false)} />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

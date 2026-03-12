@@ -47,3 +47,5 @@ app:
     timezone: UTC
     auto-lock-cron: "0 0 10 * * MON"
     carry-forward-limit: 3
+  export:
+    email-from: ${EXPORT_EMAIL_FROM:noreply@st6weekly.com}
