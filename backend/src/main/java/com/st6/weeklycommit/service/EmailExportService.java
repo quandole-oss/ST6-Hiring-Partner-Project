@@ -12,6 +12,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,14 +25,18 @@ public class EmailExportService {
     private final JavaMailSender mailSender;
     private final ExportConfig config;
 
-    public EmailExportService(ExportDataService exportDataService, PdfExportService pdfExportService, JavaMailSender mailSender, ExportConfig config) {
+    public EmailExportService(ExportDataService exportDataService, PdfExportService pdfExportService, Optional<JavaMailSender> mailSender, ExportConfig config) {
         this.exportDataService = exportDataService;
         this.pdfExportService = pdfExportService;
-        this.mailSender = mailSender;
+        this.mailSender = mailSender.orElse(null);
         this.config = config;
     }
 
     public void sendTeamReport(UUID teamId, List<String> recipients, boolean attachPdf) {
+        if (mailSender == null) {
+            throw new IllegalStateException("Email is not configured. Set spring.mail.host to enable email export.");
+        }
+
         DashboardTeamDto team = exportDataService.getTeamData(teamId);
 
         String subject = "Weekly Commit Report — " + team.teamName();
