@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAiQa } from "../api/dashboard";
 import { shouldUseMock, getMockQaResponse } from "../services/aiSummaryService";
 import { GlowButton } from "./animations/GlowButton";
+import { MarkdownContent } from "./MarkdownContent";
 
 interface Props {
   teamId: string;
@@ -17,6 +18,7 @@ interface QaEntry {
 function TypingReveal({ text }: { text: string }) {
   const [visibleCount, setVisibleCount] = useState(0);
   const words = text.split(" ");
+  const done = visibleCount >= words.length;
 
   useEffect(() => {
     setVisibleCount(0);
@@ -33,12 +35,14 @@ function TypingReveal({ text }: { text: string }) {
     return () => clearInterval(interval);
   }, [text, words.length]);
 
+  if (done) {
+    return <MarkdownContent content={text} />;
+  }
+
   return (
     <span className="whitespace-pre-line">
       {words.slice(0, visibleCount).join(" ")}
-      {visibleCount < words.length && (
-        <span className="inline-block w-1.5 h-4 bg-purple-400 animate-pulse ml-0.5 align-middle rounded-sm" />
-      )}
+      <span className="inline-block w-1.5 h-4 bg-purple-400 animate-pulse ml-0.5 align-middle rounded-sm" />
     </span>
   );
 }
@@ -121,7 +125,7 @@ export function AIQAPanel({ teamId }: Props) {
                       {i === history.length - 1 && latestAnswer ? (
                         <TypingReveal text={entry.answer} />
                       ) : (
-                        <span className="whitespace-pre-line">{entry.answer}</span>
+                        <MarkdownContent content={entry.answer} />
                       )}
                     </div>
                   </div>

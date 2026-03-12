@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTeamSummary } from "../api/dashboard";
 import { GlowButton } from "./animations/GlowButton";
+import { MarkdownContent } from "./MarkdownContent";
 
 interface Props {
   teamId: string;
@@ -11,6 +12,7 @@ interface Props {
 function TypingReveal({ text }: { text: string }) {
   const [visibleCount, setVisibleCount] = useState(0);
   const words = text.split(" ");
+  const done = visibleCount >= words.length;
 
   useEffect(() => {
     setVisibleCount(0);
@@ -27,12 +29,14 @@ function TypingReveal({ text }: { text: string }) {
     return () => clearInterval(interval);
   }, [text, words.length]);
 
+  if (done) {
+    return <MarkdownContent content={text} />;
+  }
+
   return (
     <span className="whitespace-pre-line">
       {words.slice(0, visibleCount).join(" ")}
-      {visibleCount < words.length && (
-        <span className="inline-block w-1.5 h-4 bg-purple-400 animate-pulse ml-0.5 align-middle rounded-sm" />
-      )}
+      <span className="inline-block w-1.5 h-4 bg-purple-400 animate-pulse ml-0.5 align-middle rounded-sm" />
     </span>
   );
 }
@@ -108,7 +112,7 @@ export function AISummaryPanel({ teamId, teamName }: Props) {
         >
           <div className="text-sm text-gray-700 leading-relaxed">
             {showTyping ? <TypingReveal text={summary.summary} /> : (
-              <span className="whitespace-pre-line">{summary.summary}</span>
+              <MarkdownContent content={summary.summary} />
             )}
           </div>
           <p className="text-xs text-gray-400 mt-2">
