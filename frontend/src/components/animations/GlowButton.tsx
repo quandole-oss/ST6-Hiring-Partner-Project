@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import type { ReactNode } from "react";
+import type { ReactNode, CSSProperties } from "react";
 
 interface Props {
   children: ReactNode;
@@ -7,14 +7,16 @@ interface Props {
   disabled?: boolean;
   className?: string;
   glowColor?: string;
+  style?: CSSProperties;
 }
 
-export function GlowButton({ children, className = "", glowColor = "rgba(59, 130, 246, 0.5)", onClick, disabled }: Props) {
+export function GlowButton({ children, className = "", glowColor = "rgba(59, 130, 246, 0.5)", onClick, disabled, style }: Props) {
   return (
     <motion.button
       type="button"
       onClick={onClick}
       disabled={disabled}
+      style={style}
       className={`relative overflow-hidden ${className}`}
       whileHover={disabled ? {} : { scale: 1.03 }}
       whileTap={disabled ? {} : { scale: 0.97 }}

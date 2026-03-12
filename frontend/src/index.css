@@ -1,12 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-gray-50 text-gray-900 antialiased;
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }
 }
 
-/* Smooth scroll for scroll progress indicator */
-html {
-  scroll-behavior: smooth;
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl border border-slate-100 shadow-card;
+  }
+  .card-hover {
+    @apply card transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5;
+  }
+  .page-title {
+    @apply text-2xl font-bold tracking-tight text-slate-900;
+  }
+  .page-subtitle {
+    @apply text-sm text-slate-500 mt-1;
+  }
+  .field-label {
+    @apply text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block;
+  }
+  .select-modern {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800
+           transition-all duration-150 outline-none appearance-none
+           focus:ring-2 focus:ring-st6-teal-400/30 focus:border-st6-teal-500
+           hover:border-slate-300;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+  }
+  .input-modern {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800
+           transition-all duration-150 outline-none
+           focus:ring-2 focus:ring-st6-teal-400/30 focus:border-st6-teal-500
+           hover:border-slate-300 placeholder:text-slate-400;
+  }
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-xl bg-st6-teal-700 px-5 py-2.5 text-sm font-semibold text-white
+           shadow-sm transition-all duration-150
+           hover:bg-st6-teal-600 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-orange {
+    @apply inline-flex items-center gap-2 rounded-xl bg-st6-orange px-5 py-2.5 text-sm font-semibold text-white
+           shadow-sm transition-all duration-150
+           hover:bg-st6-orange-dark active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-slate-600
+           border border-slate-200 bg-white transition-all duration-150
+           hover:bg-slate-50 hover:border-slate-300 hover:text-slate-800 active:scale-95;
+  }
+}
+
+@layer utilities {
+  .bg-white\/8 { background-color: rgba(255,255,255,0.08); }
+  .shadow-inner-sm { box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
+  .gradient-mesh {
+    background-image:
+      radial-gradient(at 40% 20%, rgba(13,51,64,0.08) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(245,124,0,0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(13,51,64,0.06) 0px, transparent 50%);
+  }
 }

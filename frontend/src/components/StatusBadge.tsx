@@ -1,36 +1,50 @@
 import { motion } from "framer-motion";
 import type { CommitStatus } from "../types";
 
-const STATUS_STYLES: Record<CommitStatus, string> = {
-  DRAFT: "bg-gray-100 text-gray-700",
-  LOCKED: "bg-blue-100 text-blue-700",
-  RECONCILING: "bg-yellow-100 text-yellow-700",
-  RECONCILED: "bg-green-100 text-green-700",
-  CARRY_FORWARD: "bg-purple-100 text-purple-700",
-};
-
-const SHIMMER_COLORS: Record<CommitStatus, string> = {
-  DRAFT: "from-gray-100 via-gray-200 to-gray-100",
-  LOCKED: "from-blue-100 via-blue-200 to-blue-100",
-  RECONCILING: "from-yellow-100 via-yellow-200 to-yellow-100",
-  RECONCILED: "from-green-100 via-green-200 to-green-100",
-  CARRY_FORWARD: "from-purple-100 via-purple-200 to-purple-100",
+const STATUS_CONFIG: Record<CommitStatus, { bg: string; text: string; dot: string; label: string }> = {
+  DRAFT: {
+    bg: "bg-slate-100",
+    text: "text-slate-600",
+    dot: "bg-slate-400",
+    label: "Draft",
+  },
+  LOCKED: {
+    bg: "bg-blue-50",
+    text: "text-blue-700",
+    dot: "bg-blue-500",
+    label: "Locked",
+  },
+  RECONCILING: {
+    bg: "bg-amber-50",
+    text: "text-amber-700",
+    dot: "bg-amber-500",
+    label: "Reconciling",
+  },
+  RECONCILED: {
+    bg: "bg-emerald-50",
+    text: "text-emerald-700",
+    dot: "bg-emerald-500",
+    label: "Reconciled",
+  },
+  CARRY_FORWARD: {
+    bg: "bg-purple-50",
+    text: "text-purple-700",
+    dot: "bg-purple-500",
+    label: "Carry Forward",
+  },
 };
 
 export function StatusBadge({ status }: { status: CommitStatus }) {
+  const config = STATUS_CONFIG[status];
   return (
     <motion.span
-      className={`relative inline-block rounded-full px-3 py-1 text-xs font-medium overflow-hidden ${STATUS_STYLES[status]}`}
-      initial={{ scale: 0.8, opacity: 0 }}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${config.bg} ${config.text}`}
+      initial={{ scale: 0.85, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
-      <motion.div
-        className={`absolute inset-0 bg-gradient-to-r ${SHIMMER_COLORS[status]}`}
-        animate={{ x: ["-100%", "100%"] }}
-        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
-      />
-      <span className="relative z-10">{status.replace("_", " ")}</span>
+      <span className={`w-1.5 h-1.5 rounded-full ${config.dot} shrink-0`} />
+      {config.label}
     </motion.span>
   );
 }

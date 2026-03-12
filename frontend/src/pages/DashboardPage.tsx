@@ -94,9 +94,16 @@ function DashboardView({ teamId }: { teamId: string }) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
-      <div>
-        <h1 className="text-2xl font-bold text-slate-800">Manager Dashboard</h1>
-        <p className="text-sm text-slate-500 mt-1">{team.teamName}</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ background: "rgba(13,51,64,0.08)", color: "#145e6e" }}>
+              {team.teamName}
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Manager Dashboard</h1>
+          <p className="text-sm text-slate-500 mt-1">Weekly performance overview and alignment metrics</p>
+        </div>
       </div>
 
       <AISummaryPanel teamId={teamId} />
@@ -110,20 +117,25 @@ function DashboardView({ teamId }: { teamId: string }) {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           {[
-            { label: "Alignment", content: <AlignmentScoreDisplay score={alignment.overallAlignment} /> },
-            { label: "Total Items", value: alignment.totalItems, color: "text-slate-800" },
-            { label: "RCDO Linked", value: alignment.linkedItems, color: "text-[#0f4c5c]" },
-            { label: "Unlinked", value: alignment.unlinkedItems, color: "text-[#f57c00]" },
-            { label: "Total SP", value: totalSP, color: "text-indigo-600" },
-            { label: "Completed SP", value: completedSP, color: "text-emerald-600" },
+            { label: "Alignment", content: <AlignmentScoreDisplay score={alignment.overallAlignment} />, icon: "🎯" },
+            { label: "Total Items", value: alignment.totalItems, color: "text-slate-800", icon: "📋" },
+            { label: "RCDO Linked", value: alignment.linkedItems, color: "text-st6-teal-700", icon: "🔗" },
+            { label: "Unlinked", value: alignment.unlinkedItems, color: "text-st6-orange", icon: "⚠️" },
+            { label: "Total SP", value: totalSP, color: "text-indigo-600", icon: "📊" },
+            { label: "Completed SP", value: completedSP, color: "text-emerald-600", icon: "✅" },
           ].map((metric) => (
-            <div key={metric.label} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
+            <div
+              key={metric.label}
+              className="bg-white rounded-2xl border border-slate-100 p-5 text-center transition-all duration-200 hover:-translate-y-0.5"
+              style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)" }}
+            >
+              <div className="text-lg mb-1">{metric.icon}</div>
               {metric.content ?? (
-                <div className={`text-3xl font-bold ${metric.color}`}>
+                <div className={`text-3xl font-bold tracking-tight ${metric.color}`}>
                   <AnimatedNumber value={metric.value!} />
                 </div>
               )}
-              <div className="text-xs text-slate-500 mt-1 font-medium">{metric.label}</div>
+              <div className="text-xs text-slate-500 mt-1.5 font-medium uppercase tracking-wide">{metric.label}</div>
             </div>
           ))}
         </motion.div>
@@ -131,20 +143,20 @@ function DashboardView({ teamId }: { teamId: string }) {
 
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden transition-all duration-200 hover:-translate-y-0.5" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
           <SPBarChart members={team.members} />
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden transition-all duration-200 hover:-translate-y-0.5" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
           <CategoryDonutChart breakdown={team.categoryBreakdown} />
         </div>
       </div>
 
       {/* Member table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100 text-left text-xs text-slate-500 uppercase tracking-wide">
+              <tr className="border-b border-slate-100 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider" style={{ background: "#f8fafc" }}>
                 <th className="py-3 px-4">Member</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4 text-right">Items</th>

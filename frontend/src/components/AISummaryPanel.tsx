@@ -51,21 +51,29 @@ export function AISummaryPanel({ teamId, teamName }: Props) {
 
   return (
     <motion.div
-      className="rounded-lg border border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 p-4 space-y-3"
+      className="rounded-2xl border border-purple-100 p-5 space-y-3"
+      style={{
+        background: "linear-gradient(135deg, rgba(147,51,234,0.04) 0%, rgba(59,130,246,0.04) 100%)",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)",
+      }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-purple-800 flex items-center gap-2">
-          <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            AI Summary
-          </span>
-        </h3>
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%)" }}>
+            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+            </svg>
+          </div>
+          <h3 className="font-semibold text-slate-800 text-sm">AI Summary</h3>
+        </div>
         <GlowButton
           onClick={() => refetch()}
           disabled={isFetching}
-          className="rounded bg-purple-600 px-3 py-1 text-xs text-white hover:bg-purple-700 disabled:opacity-50"
+          className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 transition-all duration-150"
+          style={{ background: "linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)", boxShadow: "0 3px 8px rgba(124,58,237,0.3)" }}
           glowColor="rgba(147, 51, 234, 0.5)"
         >
           {isFetching ? "Generating..." : summary ? "Regenerate" : "Generate Summary"}

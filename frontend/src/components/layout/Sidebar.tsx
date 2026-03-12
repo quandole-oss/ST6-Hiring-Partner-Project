@@ -1,17 +1,18 @@
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTeamContext } from "../../contexts/TeamContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 const navItems = [
   {
     to: "/",
     label: "Dashboard",
+    end: true,
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
       </svg>
     ),
-    end: true,
   },
   {
     to: "/editor",
@@ -54,60 +55,108 @@ const navItems = [
 
 export function Sidebar() {
   const { teamId } = useTeamContext();
+  const { user, logout } = useAuth();
   const dashboardTo = teamId ? `/dashboard/${teamId}` : "/";
 
+  const initials = user?.name
+    ? user.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()
+    : "WC";
+
   return (
-    <aside className="fixed top-0 left-0 h-screen w-16 lg:w-56 bg-st6-teal-900 flex flex-col z-20">
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-white/10">
-        <div className="w-8 h-8 rounded-lg bg-st6-orange flex items-center justify-center text-white font-bold text-sm shrink-0">
+    <aside
+      className="fixed top-0 left-0 h-screen w-16 lg:w-60 flex flex-col z-20"
+      style={{
+        background: "linear-gradient(180deg, #0d3340 0%, #071e26 100%)",
+        borderRight: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
+      {/* Logo / Brand */}
+      <div className="flex items-center gap-3 px-4 h-16 border-b shrink-0" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+        <div
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0"
+          style={{
+            background: "linear-gradient(135deg, #f57c00 0%, #e65100 100%)",
+            boxShadow: "0 4px 12px rgba(245, 124, 0, 0.35)",
+          }}
+        >
           S6
         </div>
-        <span className="text-white font-semibold text-sm hidden lg:block">ST6 Weekly Commit</span>
+        <div className="hidden lg:block min-w-0">
+          <p className="text-white font-semibold text-sm leading-tight truncate">ST6 Weekly Commit</p>
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>v0.3.0</p>
+        </div>
       </div>
 
-      <nav className="flex-1 py-4 space-y-1">
+      {/* Navigation */}
+      <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const to = item.label === "Dashboard" ? dashboardTo : item.to;
           return (
-          <NavLink
-            key={item.label}
-            to={to}
-            end={item.end}
-            className={({ isActive }) =>
-              `group flex items-center gap-3 px-4 py-2.5 text-sm transition-colors relative ${
-                isActive
-                  ? "text-white bg-white/10"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                {isActive && (
-                  <motion.div
-                    layoutId="sidebar-active"
-                    className="absolute left-0 top-0 bottom-0 w-[3px] bg-st6-orange rounded-r"
-                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                  />
-                )}
-                <span className="shrink-0">{item.icon}</span>
-                <span className="hidden lg:block">{item.label}</span>
-              </>
-            )}
-          </NavLink>
+            <NavLink
+              key={item.label}
+              to={to}
+              end={item.end}
+              className={({ isActive }) =>
+                `group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-150 relative ${
+                  isActive ? "text-white" : "hover:text-white"
+                }`
+              }
+              style={({ isActive }) => ({
+                color: isActive ? "#fff" : "rgba(255,255,255,0.5)",
+              })}
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active-bg"
+                      className="absolute inset-0 rounded-xl"
+                      style={{ background: "rgba(255,255,255,0.09)" }}
+                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active-bar"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
+                      style={{ background: "#f57c00" }}
+                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                  <span className="shrink-0 relative z-10 transition-colors duration-150">
+                    {item.icon}
+                  </span>
+                  <span className="hidden lg:block relative z-10 truncate">{item.label}</span>
+                </>
+              )}
+            </NavLink>
           );
         })}
       </nav>
 
-      <div className="px-4 py-4 border-t border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-st6-teal-700 flex items-center justify-center text-white text-xs font-medium shrink-0">
-            WC
+      {/* User footer */}
+      <div className="px-3 py-4 shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+        <div className="flex items-center gap-3 px-1">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold shrink-0"
+            style={{ background: "linear-gradient(135deg, #1a7181 0%, #0d3340 100%)" }}
+          >
+            {initials}
           </div>
-          <div className="hidden lg:block">
-            <p className="text-xs text-white/80 font-medium">v0.3.0</p>
-            <p className="text-xs text-white/40">Module</p>
+          <div className="hidden lg:flex flex-col min-w-0 flex-1">
+            <p className="text-xs font-medium truncate" style={{ color: "rgba(255,255,255,0.7)" }}>{user?.name ?? "Module"}</p>
+            <p className="text-xs truncate" style={{ color: "rgba(255,255,255,0.3)" }}>Weekly Commit</p>
           </div>
+          <button
+            onClick={logout}
+            className="hidden lg:flex shrink-0 transition-colors"
+            style={{ color: "rgba(255,255,255,0.3)" }}
+            title="Sign out"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+            </svg>
+          </button>
         </div>
       </div>
     </aside>

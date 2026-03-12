@@ -71,7 +71,7 @@ function CommitSelector() {
       transition={{ duration: 0.4 }}
     >
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Commit Editor</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Commit Editor</h1>
         <p className="text-sm text-slate-500 mt-1">Select a team and member to manage weekly commits.</p>
       </div>
 
@@ -86,17 +86,23 @@ function CommitSelector() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Team</label>
-            <select
-              value={teamId}
-              onChange={(e) => { setTeamId(e.target.value); setMemberId(""); }}
-              className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-[#0f4c5c]/20 focus:border-[#0f4c5c] outline-none transition"
-            >
-              <option value="">Select team...</option>
-              {teams?.map((t) => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Team</label>
+            <div className="relative">
+              <select
+                value={teamId}
+                onChange={(e) => { setTeamId(e.target.value); setMemberId(""); }}
+                className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none appearance-none transition-all duration-150 focus:ring-2 focus:ring-st6-teal-400/30 focus:border-st6-teal-500 hover:border-slate-300"
+                style={{ boxShadow: "inset 0 1px 2px rgba(0,0,0,0.04)", paddingRight: "2.5rem" }}
+              >
+                <option value="">Select team...</option>
+                {teams?.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+              <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
           <AnimatePresence>
             {teamId && (
@@ -106,17 +112,23 @@ function CommitSelector() {
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
               >
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wide">Member</label>
-                <select
-                  value={memberId}
-                  onChange={(e) => setMemberId(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-[#0f4c5c]/20 focus:border-[#0f4c5c] outline-none transition"
-                >
-                  <option value="">Select member...</option>
-                  {members?.map((m) => (
-                    <option key={m.id} value={m.id}>{m.name}</option>
-                  ))}
-                </select>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Member</label>
+                <div className="relative">
+                  <select
+                    value={memberId}
+                    onChange={(e) => setMemberId(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none appearance-none transition-all duration-150 focus:ring-2 focus:ring-st6-teal-400/30 focus:border-st6-teal-500 hover:border-slate-300"
+                    style={{ boxShadow: "inset 0 1px 2px rgba(0,0,0,0.04)", paddingRight: "2.5rem" }}
+                  >
+                    <option value="">Select member...</option>
+                    {members?.map((m) => (
+                      <option key={m.id} value={m.id}>{m.name}</option>
+                    ))}
+                  </select>
+                  <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -132,7 +144,7 @@ function CommitSelector() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <h2 className="text-lg font-semibold text-slate-800">Existing Commits</h2>
+            <h2 className="text-base font-semibold text-slate-800 tracking-tight">Existing Commits</h2>
             {commits && commits.length > 0 ? (
               <div className="space-y-2">
                 {commits.map((c, i) => (
@@ -144,7 +156,8 @@ function CommitSelector() {
                   >
                     <Link
                       to={`/commits/${c.id}`}
-                      className="block bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-shadow"
+                      className="block bg-white rounded-xl border border-slate-100 p-4 transition-all duration-150 hover:-translate-y-0.5"
+                      style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-medium text-slate-800">Week of {c.weekStart}</span>
@@ -166,13 +179,15 @@ function CommitSelector() {
                   type="date"
                   value={weekStart}
                   onChange={(e) => setWeekStart(e.target.value)}
-                  className="mt-1 block rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#0f4c5c]/20 focus:border-[#0f4c5c] outline-none"
+                  className="block rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition-all duration-150 focus:ring-2 focus:ring-st6-teal-400/30 focus:border-st6-teal-500"
+                  style={{ boxShadow: "inset 0 1px 2px rgba(0,0,0,0.04)" }}
                 />
               </div>
               <GlowButton
                 onClick={handleCreate}
                 disabled={createCommit.isPending}
-                className="rounded-lg bg-[#f57c00] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#e65100] disabled:opacity-50"
+                className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all duration-150 disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg, #f57c00 0%, #e65100 100%)", boxShadow: "0 4px 12px rgba(245,124,0,0.3)" }}
                 glowColor="rgba(245, 124, 0, 0.5)"
               >
                 {createCommit.isPending ? "Creating..." : "New Commit"}
@@ -473,7 +488,7 @@ function CommitEditor({ commitId }: { commitId: string }) {
             </AnimatePresence>
             {commit.items.length === 0 && (
               <motion.div
-                className="bg-white rounded-2xl border border-dashed border-slate-300 p-8 text-center"
+                className="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-10 text-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
@@ -488,7 +503,8 @@ function CommitEditor({ commitId }: { commitId: string }) {
             {isDraft && hasStaleItems && (
               <GlowButton
                 onClick={() => setShowStaleWarning(true)}
-                className="rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600"
+                className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all duration-150"
+                style={{ background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)", boxShadow: "0 4px 12px rgba(245,158,11,0.3)" }}
                 glowColor="rgba(245, 158, 11, 0.5)"
               >
                 Resolve Stale Tasks
@@ -498,7 +514,8 @@ function CommitEditor({ commitId }: { commitId: string }) {
               <GlowButton
                 onClick={() => lockCommit.mutate(commit.id, { onError: (err) => addToast((err as Error).message) })}
                 disabled={!canLock}
-                className="rounded-lg bg-[#f57c00] px-6 py-3 text-sm font-semibold text-white hover:bg-[#e65100] disabled:opacity-50 uppercase tracking-wide"
+                className="rounded-xl px-6 py-3 text-sm font-semibold text-white uppercase tracking-wide transition-all duration-150 disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg, #f57c00 0%, #e65100 100%)", boxShadow: "0 4px 14px rgba(245,124,0,0.35)" }}
                 glowColor="rgba(245, 124, 0, 0.5)"
               >
                 Lock Week
@@ -509,11 +526,11 @@ function CommitEditor({ commitId }: { commitId: string }) {
 
         {/* Right sidebar */}
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-            <h3 className="text-sm font-semibold text-slate-700 mb-3">Chess Layer Grid</h3>
+          <div className="bg-white rounded-2xl border border-slate-100 p-4" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+            <h3 className="text-sm font-semibold text-slate-700 mb-3 tracking-tight">Chess Layer Grid</h3>
             <ChessGrid items={commit.items} />
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+          <div className="bg-white rounded-2xl border border-slate-100 p-4" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
             <motion.button
               onClick={() => setShowHistory(!showHistory)}
               className="text-sm font-medium text-slate-500 hover:text-[#0f4c5c] flex items-center gap-1 w-full"
