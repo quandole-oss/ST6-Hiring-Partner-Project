@@ -40,7 +40,7 @@ app:
     expiry-ms: ${JWT_EXPIRY_MS:86400000}
   ai:
     anthropic-api-key: ${ANTHROPIC_API_KEY:}
-    model: claude-sonnet-4-5-20250514
+    model: claude-sonnet-4-6-20250514
     max-tokens: 1024
     enabled: ${AI_SUMMARIES_ENABLED:true}
     qa-max-tokens: 2048
