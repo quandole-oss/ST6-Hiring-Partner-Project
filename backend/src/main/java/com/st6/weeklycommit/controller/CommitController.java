@@ -113,6 +113,11 @@ public class CommitController {
         return commitService.updateItemRisk(commitId, itemId, req);
     }
 
+    @PutMapping("/{id}/mood")
+    public WeeklyCommitDto updateMood(@PathVariable UUID id, @Valid @RequestBody UpdateMoodRequest req) {
+        return commitService.updateMood(id, req.moodScore());
+    }
+
     private String currentUserName() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         return auth != null ? auth.getName() : "ANONYMOUS";

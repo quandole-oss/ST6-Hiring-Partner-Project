@@ -39,6 +39,7 @@ export interface WeeklyCommit {
   reconciledAt: string | null;
   items: CommitItem[];
   hasBlockedItems: boolean;
+  moodScore: number | null;
 }
 
 export interface CommitItem {
@@ -88,6 +89,8 @@ export interface DashboardMember {
   completedStoryPoints: number;
   blockedItems: number;
   atRiskItems: number;
+  moodScore: number | null;
+  previousMoodScore: number | null;
 }
 
 export interface AlignmentScore {

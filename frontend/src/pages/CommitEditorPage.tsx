@@ -13,6 +13,7 @@ import {
   useLockCommit,
   useUpdateItemFlag,
   useUpdateItemCategory,
+  useUpdateMood,
 } from "../api/commits";
 import { useTeams, useTeamMembers } from "../api/teams";
 import { CommitItemCard } from "../components/CommitItemCard";
@@ -23,6 +24,7 @@ import { ErrorAlert } from "../components/ErrorAlert";
 import { FibonacciSelector } from "../components/FibonacciSelector";
 import { CarryForwardWarning } from "../components/CarryForwardWarning";
 import { AuditTimeline } from "../components/AuditTimeline";
+import { MoodSelector } from "../components/MoodSelector";
 import { TaskDetailsModal } from "../components/TaskDetailsModal";
 import { GlowButton } from "../components/animations/GlowButton";
 import { AnimatedNumber } from "../components/animations/AnimatedNumber";
@@ -329,6 +331,7 @@ function CommitEditor({ commitId }: { commitId: string }) {
   const lockCommit = useLockCommit();
   const updateItemFlag = useUpdateItemFlag(commitId);
   const updateItemCategory = useUpdateItemCategory(commitId);
+  const updateMood = useUpdateMood(commitId);
   const { addToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showForm, setShowForm] = useState(false);
@@ -739,6 +742,21 @@ function CommitEditor({ commitId }: { commitId: string }) {
               Chess Layer Grid
             </h3>
             <ChessGrid items={commit.items} />
+          </div>
+
+          <div
+            className="bg-white rounded-2xl border border-slate-100 p-4"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+          >
+            <h3 className="text-sm font-semibold text-slate-700 mb-3">Pulse Check</h3>
+            <MoodSelector
+              value={commit.moodScore}
+              onChange={(score) => updateMood.mutate(score, {
+                onSuccess: () => addToast("Mood updated"),
+                onError: (err) => addToast((err as Error).message),
+              })}
+              disabled={updateMood.isPending}
+            />
           </div>
 
           <div

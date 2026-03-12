@@ -108,6 +108,19 @@ public class AiSummaryService {
             }
         }
 
+        // Mood scores
+        sb.append("\nTeam Mood Scores:\n");
+        for (var m : dashboard.members()) {
+            if (m.moodScore() != null) {
+                sb.append("- ").append(m.memberName()).append(": ").append(m.moodScore()).append("/5");
+                if (m.previousMoodScore() != null) {
+                    int delta = m.moodScore() - m.previousMoodScore();
+                    sb.append(delta > 0 ? " (up)" : delta < 0 ? " (down)" : " (stable)");
+                }
+                sb.append("\n");
+            }
+        }
+
         sb.append("\nSummarize this team's weekly performance in 2-3 sentences.");
         return sb.toString();
     }

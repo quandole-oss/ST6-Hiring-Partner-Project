@@ -40,7 +40,7 @@ public class DashboardService {
         var memberDtos = team.getMembers().stream().map(member -> {
             var commitOpt = commits.stream().filter(c -> c.getTeamMember().getId().equals(member.getId())).findFirst();
             if (commitOpt.isEmpty()) {
-                return new DashboardMemberDto(member.getId(), member.getName(), null, 0, 0, 0, 0.0, 0.0, 0, 0, 0, 0);
+                return new DashboardMemberDto(member.getId(), member.getName(), null, 0, 0, 0, 0.0, 0.0, 0, 0, 0, 0, null, null);
             }
             var commit = commitOpt.get();
             var items = commit.getItems();
@@ -56,7 +56,11 @@ public class DashboardService {
                     .mapToInt(i -> i.getEffortEstimate() != null ? i.getEffortEstimate() : 0).sum();
             int blocked = (int) items.stream().filter(i -> "BLOCKED".equals(i.getRiskFlag())).count();
             int atRisk = (int) items.stream().filter(i -> "AT_RISK".equals(i.getRiskFlag())).count();
-            return new DashboardMemberDto(member.getId(), member.getName(), commit.getStatus(), total, completed, partial, completionRate, alignment, totalStoryPoints, completedStoryPoints, blocked, atRisk);
+            Integer moodScore = commit.getMoodScore();
+            LocalDate prevWeekStart = weekStart.minusWeeks(1);
+            Integer previousMoodScore = commitRepo.findByTeamMemberIdAndWeekStart(member.getId(), prevWeekStart)
+                    .map(WeeklyCommit::getMoodScore).orElse(null);
+            return new DashboardMemberDto(member.getId(), member.getName(), commit.getStatus(), total, completed, partial, completionRate, alignment, totalStoryPoints, completedStoryPoints, blocked, atRisk, moodScore, previousMoodScore);
         }).toList();
 
         Map<String, Integer> categoryBreakdown = commits.stream()
