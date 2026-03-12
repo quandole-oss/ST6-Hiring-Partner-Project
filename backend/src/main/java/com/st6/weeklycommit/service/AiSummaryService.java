@@ -35,7 +35,7 @@ public class AiSummaryService {
         this.objectMapper = objectMapper;
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(5));
-        requestFactory.setReadTimeout(Duration.ofSeconds(15));
+        requestFactory.setReadTimeout(Duration.ofSeconds(30));
         this.restClient = RestClient.builder()
                 .baseUrl("https://api.anthropic.com/v1")
                 .requestFactory(requestFactory)

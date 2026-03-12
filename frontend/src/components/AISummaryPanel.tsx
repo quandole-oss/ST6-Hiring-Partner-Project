@@ -38,7 +38,7 @@ function TypingReveal({ text }: { text: string }) {
 }
 
 export function AISummaryPanel({ teamId, teamName }: Props) {
-  const { data: summary, isLoading, isFetching, refetch } = useTeamSummary(teamId, teamName);
+  const { data: summary, isLoading, isFetching, error, refetch } = useTeamSummary(teamId, teamName);
   const [showTyping, setShowTyping] = useState(false);
 
   useEffect(() => {
@@ -94,7 +94,13 @@ export function AISummaryPanel({ teamId, teamName }: Props) {
         </div>
       )}
 
-      {summary && (
+      {error && !isFetching && (
+        <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          AI summary is temporarily unavailable. Please try again later.
+        </div>
+      )}
+
+      {summary && !error && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

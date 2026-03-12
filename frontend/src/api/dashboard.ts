@@ -26,6 +26,7 @@ export function useTeamSummary(teamId: string, teamName?: string) {
         ? getMockSummary(teamId, teamName ?? "Team")
         : api.get<TeamSummary>(`/dashboard/team/${teamId}/summary`),
     enabled: false,
+    retry: false,
   });
 }
 
