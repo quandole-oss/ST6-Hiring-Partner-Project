@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LoginPage } from "./pages/LoginPage";
 import { Sidebar } from "./components/layout/Sidebar";
+import { FloatingAIChat } from "./components/FloatingAIChat";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const CommitEditorPage = lazy(() => import("./pages/CommitEditorPage").then(m => ({ default: m.CommitEditorPage })));
@@ -24,6 +25,7 @@ export default function App() {
         <ProtectedRoute>
           <div className="min-h-screen flex">
             <Sidebar />
+            <FloatingAIChat />
             <main className="flex-1 ml-16 lg:ml-60 bg-slate-50 min-h-screen">
               <Suspense fallback={<LoadingFallback />}>
                 <Routes>
