@@ -15,6 +15,7 @@ import { AISummaryPanel } from "../components/AISummaryPanel";
 import { ExportMenu } from "../components/ExportMenu";
 import { ExportSettingsModal } from "../components/ExportSettingsModal";
 import { MoodIndicator } from "../components/MoodIndicator";
+import { AIQAPanel } from "../components/AIQAPanel";
 import { SPBarChart } from "../components/charts/SPBarChart";
 import { CategoryDonutChart } from "../components/charts/CategoryDonutChart";
 import { Combobox } from "../components/ui/Combobox";
@@ -169,6 +170,7 @@ function DashboardView({ teamId }: { teamId: string }) {
       </div>
 
       <AISummaryPanel teamId={teamId} />
+      <AIQAPanel teamId={teamId} />
 
       {/* Metrics grid */}
       {alignment && (

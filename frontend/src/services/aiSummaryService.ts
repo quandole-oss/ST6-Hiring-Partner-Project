@@ -38,3 +38,21 @@ export function getMockSummary(teamId: string, teamName: string): Promise<TeamSu
     }, 1500);
   });
 }
+
+const MOCK_QA_RESPONSES = [
+  "Based on the current week's data, the team has committed a total of 24 story points across 8 items. Alice leads with 13 SP on strategic work, while Bob has 2 items currently blocked that may need attention.",
+  "Looking at the commit history, the team's completion rate has been trending upward over the past few weeks. RCDO alignment is at 67%, with most unlinked items falling in the operational category.",
+  "The data shows that Carol has been consistently delivering on tactical items with a 100% completion rate. Consider shifting some strategic work her way to balance the team's workload.",
+];
+
+export function getMockQaResponse(question: string): Promise<{ question: string; answer: string; generatedAt: string }> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        question,
+        answer: MOCK_QA_RESPONSES[Math.floor(Math.random() * MOCK_QA_RESPONSES.length)],
+        generatedAt: new Date().toISOString(),
+      });
+    }, 1500);
+  });
+}
