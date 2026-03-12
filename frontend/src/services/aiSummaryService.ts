@@ -1,6 +1,6 @@
 import type { TeamSummary } from "../types";
 
-const USE_MOCK_AI = import.meta.env.VITE_AI_ENABLED !== "true";
+const USE_MOCK_AI = import.meta.env.VITE_AI_ENABLED === "false";
 
 const MOCK_SUMMARIES = [
   "Team velocity is strong this week with {sp} story points committed. RCDO alignment sits at 67% — consider linking unattached operational tasks to outcomes for better visibility.\n\nNo blocked items detected. Strategic work accounts for the majority of effort, which aligns well with quarterly objectives.",

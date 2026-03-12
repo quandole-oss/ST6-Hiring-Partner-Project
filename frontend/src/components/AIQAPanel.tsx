@@ -72,8 +72,9 @@ export function AIQAPanel({ teamId }: Props) {
       }
       setLatestAnswer(response.answer);
       setHistory((prev) => [...prev, response]);
-    } catch {
-      setHistory((prev) => [...prev, { question: q, answer: "Sorry, I couldn't process that question. Please try again.", generatedAt: new Date().toISOString() }]);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Sorry, I couldn't process that question. Please try again.";
+      setHistory((prev) => [...prev, { question: q, answer: msg, generatedAt: new Date().toISOString() }]);
     } finally {
       setLoading(false);
     }
