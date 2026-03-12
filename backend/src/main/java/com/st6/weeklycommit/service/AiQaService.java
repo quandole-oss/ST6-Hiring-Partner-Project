@@ -139,6 +139,9 @@ public class AiQaService {
                     String outcome = item.getOutcome() != null ? item.getOutcome().getTitle() : "Unlinked";
 
                     sb.append("  - ").append(item.getTitle());
+                    if (item.getDescription() != null && !item.getDescription().isBlank()) {
+                        sb.append(": ").append(item.getDescription());
+                    }
                     sb.append(" [").append(category).append(", ").append(sp).append(" SP");
                     sb.append(", Outcome: ").append(outcome);
 
