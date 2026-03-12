@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { api } from "./client";
 import { shouldUseMock, getMockSummary } from "../services/aiSummaryService";
 import type { DashboardTeam, AlignmentScore, TeamSummary } from "../types";
@@ -26,5 +26,23 @@ export function useTeamSummary(teamId: string, teamName?: string) {
         ? getMockSummary(teamId, teamName ?? "Team")
         : api.get<TeamSummary>(`/dashboard/team/${teamId}/summary`),
     enabled: false,
+  });
+}
+
+export interface AiQaRequest {
+  question: string;
+  teamId?: string;
+}
+
+export interface AiQaResponse {
+  question: string;
+  answer: string;
+  generatedAt: string;
+}
+
+export function useAiQa() {
+  return useMutation({
+    mutationFn: (data: AiQaRequest) =>
+      api.post<AiQaResponse>("/dashboard/ai/ask", data),
   });
 }

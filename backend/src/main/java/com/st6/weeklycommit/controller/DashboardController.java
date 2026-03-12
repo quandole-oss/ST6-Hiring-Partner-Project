@@ -1,11 +1,10 @@
 package com.st6.weeklycommit.controller;
 
-import com.st6.weeklycommit.model.dto.AlignmentScoreDto;
-import com.st6.weeklycommit.model.dto.BlockedItemDto;
-import com.st6.weeklycommit.model.dto.DashboardTeamDto;
-import com.st6.weeklycommit.model.dto.TeamSummaryDto;
+import com.st6.weeklycommit.model.dto.*;
+import com.st6.weeklycommit.service.AiQaService;
 import com.st6.weeklycommit.service.AiSummaryService;
 import com.st6.weeklycommit.service.DashboardService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,10 +16,12 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
     private final AiSummaryService aiSummaryService;
+    private final AiQaService aiQaService;
 
-    public DashboardController(DashboardService dashboardService, AiSummaryService aiSummaryService) {
+    public DashboardController(DashboardService dashboardService, AiSummaryService aiSummaryService, AiQaService aiQaService) {
         this.dashboardService = dashboardService;
         this.aiSummaryService = aiSummaryService;
+        this.aiQaService = aiQaService;
     }
 
     @GetMapping("/team/{teamId}")
@@ -34,4 +35,9 @@ public class DashboardController {
 
     @GetMapping("/team/{teamId}/summary")
     public TeamSummaryDto teamSummary(@PathVariable UUID teamId) { return aiSummaryService.generateSummary(teamId); }
+
+    @PostMapping("/ai/ask")
+    public AiQaResponse askQuestion(@Valid @RequestBody AiQaRequest request) {
+        return aiQaService.askQuestion(request.question(), request.teamId());
+    }
 }

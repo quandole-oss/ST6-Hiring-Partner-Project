@@ -158,3 +158,14 @@ export interface UpdateCommitItemRequest {
   impactEstimate?: number;
   sortOrder: number;
 }
+
+export interface AiQaRequest {
+  question: string;
+  teamId?: string;
+}
+
+export interface AiQaResponse {
+  question: string;
+  answer: string;
+  generatedAt: string;
+}

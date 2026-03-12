@@ -11,6 +11,7 @@ public class AnthropicConfig {
     private String model = "claude-sonnet-4-5-20250514";
     private int maxTokens = 1024;
     private boolean enabled = true;
+    private int qaMaxTokens = 2048;
 
     public String getAnthropicApiKey() { return anthropicApiKey; }
     public void setAnthropicApiKey(String anthropicApiKey) { this.anthropicApiKey = anthropicApiKey; }
@@ -20,4 +21,6 @@ public class AnthropicConfig {
     public void setMaxTokens(int maxTokens) { this.maxTokens = maxTokens; }
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public int getQaMaxTokens() { return qaMaxTokens; }
+    public void setQaMaxTokens(int qaMaxTokens) { this.qaMaxTokens = qaMaxTokens; }
 }

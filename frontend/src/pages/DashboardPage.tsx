@@ -12,6 +12,7 @@ import { AnimatedProgress } from "../components/animations/AnimatedProgress";
 import { InViewRow } from "../components/animations/InViewRow";
 import { GlowButton } from "../components/animations/GlowButton";
 import { AISummaryPanel } from "../components/AISummaryPanel";
+import { AIQAPanel } from "../components/AIQAPanel";
 import { SPBarChart } from "../components/charts/SPBarChart";
 import { CategoryDonutChart } from "../components/charts/CategoryDonutChart";
 import { Combobox } from "../components/ui/Combobox";
@@ -164,6 +165,7 @@ function DashboardView({ teamId }: { teamId: string }) {
       </div>
 
       <AISummaryPanel teamId={teamId} />
+      <AIQAPanel teamId={teamId} />
 
       {/* Metrics grid */}
       {alignment && (

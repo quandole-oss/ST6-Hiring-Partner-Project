@@ -24,4 +24,7 @@ public interface WeeklyCommitRepository extends JpaRepository<WeeklyCommit, UUID
     List<WeeklyCommit> findByWeekStartWithItems(@Param("weekStart") LocalDate weekStart);
 
     List<WeeklyCommit> findByStatusAndWeekStartBefore(CommitStatus status, LocalDate date);
+
+    @Query("SELECT DISTINCT wc FROM WeeklyCommit wc LEFT JOIN FETCH wc.items LEFT JOIN FETCH wc.teamMember tm LEFT JOIN FETCH tm.team WHERE wc.weekStart = :weekStart")
+    List<WeeklyCommit> findAllByWeekStartWithItemsAndMembers(@Param("weekStart") LocalDate weekStart);
 }
