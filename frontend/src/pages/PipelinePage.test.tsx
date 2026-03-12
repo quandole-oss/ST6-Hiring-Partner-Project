@@ -4,12 +4,16 @@ import { renderWithProviders } from "../test/utils";
 import { PipelinePage } from "./PipelinePage";
 
 describe("PipelinePage", () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
   it("renders page title and team selector", async () => {
     renderWithProviders(<PipelinePage />);
     await waitFor(() => {
       expect(screen.getByText("Pipeline")).toBeInTheDocument();
     });
-    expect(screen.getByText("Select team...")).toBeInTheDocument();
+    expect(screen.getByText("Select a team...")).toBeInTheDocument();
   });
 
   it("shows columns after selecting a team", async () => {
@@ -17,18 +21,21 @@ describe("PipelinePage", () => {
     renderWithProviders(<PipelinePage />);
 
     await waitFor(() => {
+      expect(screen.getByText("Select a team...")).toBeInTheDocument();
+    });
+    await user.click(screen.getByText("Select a team..."));
+    await waitFor(() => {
       expect(screen.getByText("Platform Squad")).toBeInTheDocument();
     });
-
-    await user.selectOptions(screen.getByRole("combobox"), "d0000000-0000-0000-0000-000000000001");
+    await user.click(screen.getByText("Platform Squad"));
 
     await waitFor(() => {
-      // Column headers
-      expect(screen.getAllByText("DRAFT").length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText("LOCKED").length).toBeGreaterThanOrEqual(1);
-      expect(screen.getByText("RECONCILING")).toBeInTheDocument();
-      expect(screen.getByText("RECONCILED")).toBeInTheDocument();
-      expect(screen.getByText("CARRY FORWARD")).toBeInTheDocument();
+      // Column headers use title-case labels
+      expect(screen.getAllByText("Draft").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("Locked").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText("Reconciling")).toBeInTheDocument();
+      expect(screen.getByText("Reconciled")).toBeInTheDocument();
+      expect(screen.getByText("Carry Forward")).toBeInTheDocument();
     });
   });
 
@@ -37,10 +44,13 @@ describe("PipelinePage", () => {
     renderWithProviders(<PipelinePage />);
 
     await waitFor(() => {
+      expect(screen.getByText("Select a team...")).toBeInTheDocument();
+    });
+    await user.click(screen.getByText("Select a team..."));
+    await waitFor(() => {
       expect(screen.getByText("Platform Squad")).toBeInTheDocument();
     });
-
-    await user.selectOptions(screen.getByRole("combobox"), "d0000000-0000-0000-0000-000000000001");
+    await user.click(screen.getByText("Platform Squad"));
 
     await waitFor(() => {
       expect(screen.getAllByText("Alice Chen").length).toBeGreaterThanOrEqual(1);

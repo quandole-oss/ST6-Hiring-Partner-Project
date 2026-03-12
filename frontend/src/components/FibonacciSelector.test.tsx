@@ -13,7 +13,7 @@ describe("FibonacciSelector", () => {
   it("highlights the selected value", () => {
     render(<FibonacciSelector value={5} onChange={() => {}} />);
     const btn = screen.getByText("5");
-    expect(btn.className).toContain("bg-blue-600");
+    expect(btn.className).toContain("text-white");
   });
 
   it("fires onChange with clicked value", async () => {

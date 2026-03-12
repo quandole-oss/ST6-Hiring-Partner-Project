@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { ToastProvider } from "../components/Toast";
 import { AuthProvider } from "../contexts/AuthContext";
+import { TeamProvider } from "../contexts/TeamContext";
 import type { ReactElement, ReactNode } from "react";
 
 function createTestQueryClient() {
@@ -26,7 +27,9 @@ function createWrapper(initialEntries = ["/"]) {
       <QueryClientProvider client={qc}>
         <MemoryRouter initialEntries={initialEntries}>
           <AuthProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <TeamProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </TeamProvider>
           </AuthProvider>
         </MemoryRouter>
       </QueryClientProvider>

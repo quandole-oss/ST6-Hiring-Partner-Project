@@ -3,12 +3,18 @@ import { StatusBadge } from "./StatusBadge";
 import type { CommitStatus } from "../types";
 
 describe("StatusBadge", () => {
-  const statuses: CommitStatus[] = ["DRAFT", "LOCKED", "RECONCILING", "RECONCILED", "CARRY_FORWARD"];
+  const statusLabels: Record<CommitStatus, string> = {
+    DRAFT: "Draft",
+    LOCKED: "Locked",
+    RECONCILING: "Reconciling",
+    RECONCILED: "Reconciled",
+    CARRY_FORWARD: "Carry Forward",
+  };
 
-  statuses.forEach((status) => {
+  (Object.entries(statusLabels) as [CommitStatus, string][]).forEach(([status, label]) => {
     it(`renders ${status} text`, () => {
       render(<StatusBadge status={status} />);
-      expect(screen.getByText(status.replace("_", " "))).toBeInTheDocument();
+      expect(screen.getByText(label)).toBeInTheDocument();
     });
   });
 });

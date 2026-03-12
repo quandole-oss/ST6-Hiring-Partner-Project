@@ -1,4 +1,5 @@
 import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "../test/utils";
 import { DashboardPage } from "./DashboardPage";
 import { Routes, Route } from "react-router-dom";
@@ -8,9 +9,14 @@ import { server } from "../test/mocks/server";
 describe("DashboardPage", () => {
   describe("team selector (no teamId)", () => {
     it("renders team dropdown", async () => {
+      const user = userEvent.setup();
       renderWithProviders(<DashboardPage />);
       await waitFor(() => {
-        expect(screen.getByText("Platform Squad", { selector: "option" })).toBeInTheDocument();
+        expect(screen.getByText("Select a team...")).toBeInTheDocument();
+      });
+      await user.click(screen.getByText("Select a team..."));
+      await waitFor(() => {
+        expect(screen.getByText("Platform Squad")).toBeInTheDocument();
       });
     });
   });

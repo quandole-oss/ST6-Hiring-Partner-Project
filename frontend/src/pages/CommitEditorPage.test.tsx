@@ -9,20 +9,34 @@ import { server } from "../test/mocks/server";
 describe("CommitEditorPage", () => {
   describe("selector mode (no ID)", () => {
     it("renders team dropdown", async () => {
+      const user = userEvent.setup();
       renderWithProviders(<CommitEditorPage />);
       await waitFor(() => {
-        expect(screen.getByText("Platform Squad", { selector: "option" })).toBeInTheDocument();
+        expect(screen.getByText("Select a team...")).toBeInTheDocument();
+      });
+      await user.click(screen.getByText("Select a team..."));
+      await waitFor(() => {
+        expect(screen.getByText("Platform Squad")).toBeInTheDocument();
       });
     });
 
     it("shows member dropdown after selecting team", async () => {
       const user = userEvent.setup();
       renderWithProviders(<CommitEditorPage />);
-      await waitFor(() => expect(screen.getByText("Platform Squad", { selector: "option" })).toBeInTheDocument());
-
-      await user.selectOptions(screen.getAllByRole("combobox")[0], "d0000000-0000-0000-0000-000000000001");
       await waitFor(() => {
-        expect(screen.getByText("Alice Chen", { selector: "option" })).toBeInTheDocument();
+        expect(screen.getByText("Select a team...")).toBeInTheDocument();
+      });
+      await user.click(screen.getByText("Select a team..."));
+      await waitFor(() => {
+        expect(screen.getByText("Platform Squad")).toBeInTheDocument();
+      });
+      await user.click(screen.getByText("Platform Squad"));
+      await waitFor(() => {
+        expect(screen.getByText("Select a member...")).toBeInTheDocument();
+      });
+      await user.click(screen.getByText("Select a member..."));
+      await waitFor(() => {
+        expect(screen.getByText("Alice Chen")).toBeInTheDocument();
       });
     });
   });

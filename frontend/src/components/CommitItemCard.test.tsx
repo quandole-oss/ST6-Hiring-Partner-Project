@@ -27,7 +27,7 @@ describe("CommitItemCard", () => {
     render(<CommitItemCard item={item} />);
     expect(screen.getByText("Test Item")).toBeInTheDocument();
     expect(screen.getByText("Test description")).toBeInTheDocument();
-    expect(screen.getByText("STRATEGIC")).toBeInTheDocument();
+    expect(screen.getByText("Strategic")).toBeInTheDocument();
     expect(screen.getByText("Outcome A")).toBeInTheDocument();
   });
 
