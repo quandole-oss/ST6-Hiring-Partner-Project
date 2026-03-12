@@ -9,6 +9,7 @@ const CommitEditorPage = lazy(() => import("./pages/CommitEditorPage").then(m =>
 const ReconciliationPage = lazy(() => import("./pages/ReconciliationPage").then(m => ({ default: m.ReconciliationPage })));
 const PipelinePage = lazy(() => import("./pages/PipelinePage").then(m => ({ default: m.PipelinePage })));
 const RcdoPage = lazy(() => import("./pages/RcdoPage").then(m => ({ default: m.RcdoPage })));
+const PersonalAnalyticsPage = lazy(() => import("./pages/PersonalAnalyticsPage").then(m => ({ default: m.PersonalAnalyticsPage })));
 
 function LoadingFallback() {
   return <div className="flex items-center justify-center min-h-screen text-slate-500">Loading...</div>;
@@ -32,6 +33,7 @@ export default function App() {
                   <Route path="/pipeline" element={<PipelinePage />} />
                   <Route path="/dashboard/:teamId" element={<DashboardPage />} />
                   <Route path="/rcdo" element={<RcdoPage />} />
+                  <Route path="/my-analytics" element={<PersonalAnalyticsPage />} />
                   <Route path="/settings" element={<SettingsPlaceholder />} />
                 </Routes>
               </Suspense>

@@ -158,3 +158,45 @@ export interface UpdateCommitItemRequest {
   impactEstimate?: number;
   sortOrder: number;
 }
+
+export interface PersonalAnalytics {
+  memberId: string;
+  memberName: string;
+  summary: SummaryStats;
+  streak: Streak;
+  outputTrend: WeeklyOutput[];
+  busiestDays: DayActivity[];
+  categoryBreakdown: PersonalCategoryBreakdown[];
+}
+
+export interface SummaryStats {
+  totalWeeks: number;
+  totalItems: number;
+  totalStoryPoints: number;
+  completionRate: number;
+  avgStoryPointsPerWeek: number;
+}
+
+export interface Streak {
+  currentStreak: number;
+  longestStreak: number;
+  lastTwelveWeeks: boolean[];
+}
+
+export interface WeeklyOutput {
+  weekStart: string;
+  storyPoints: number;
+  itemCount: number;
+  status: string;
+}
+
+export interface DayActivity {
+  day: string;
+  count: number;
+}
+
+export interface PersonalCategoryBreakdown {
+  category: string;
+  storyPoints: number;
+  itemCount: number;
+}
