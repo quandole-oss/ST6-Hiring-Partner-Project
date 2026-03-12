@@ -179,10 +179,17 @@ public class CommitService {
         return itemRepo.findByOutcomeId(outcomeId).stream().map(this::toItemDto).toList();
     }
 
+    @Transactional
+    public WeeklyCommitDto updateMood(UUID commitId, Integer moodScore) {
+        var commit = findCommit(commitId);
+        commit.setMoodScore(moodScore);
+        return toDto(commitRepo.save(commit));
+    }
+
     WeeklyCommitDto toDto(WeeklyCommit wc) {
         var items = wc.getItems().stream().map(this::toItemDto).toList();
         boolean hasBlocked = wc.getItems().stream().anyMatch(i -> "BLOCKED".equals(i.getRiskFlag()));
-        return new WeeklyCommitDto(wc.getId(), wc.getTeamMember().getId(), wc.getTeamMember().getName(), wc.getWeekStart(), wc.getStatus(), wc.getLockedAt(), wc.getReconciledAt(), items, hasBlocked);
+        return new WeeklyCommitDto(wc.getId(), wc.getTeamMember().getId(), wc.getTeamMember().getName(), wc.getWeekStart(), wc.getStatus(), wc.getLockedAt(), wc.getReconciledAt(), items, hasBlocked, wc.getMoodScore());
     }
 
     CommitItemDto toItemDto(CommitItem item) {

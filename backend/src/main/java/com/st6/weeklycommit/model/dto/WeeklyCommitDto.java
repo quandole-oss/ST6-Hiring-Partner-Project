@@ -6,4 +6,4 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public record WeeklyCommitDto(UUID id, UUID teamMemberId, String teamMemberName, LocalDate weekStart, CommitStatus status, Instant lockedAt, Instant reconciledAt, List<CommitItemDto> items, boolean hasBlockedItems) {}
+public record WeeklyCommitDto(UUID id, UUID teamMemberId, String teamMemberName, LocalDate weekStart, CommitStatus status, Instant lockedAt, Instant reconciledAt, List<CommitItemDto> items, boolean hasBlockedItems, Integer moodScore) {}

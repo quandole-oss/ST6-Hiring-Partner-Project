@@ -14,6 +14,7 @@ import { GlowButton } from "../components/animations/GlowButton";
 import { AISummaryPanel } from "../components/AISummaryPanel";
 import { ExportMenu } from "../components/ExportMenu";
 import { ExportSettingsModal } from "../components/ExportSettingsModal";
+import { MoodIndicator } from "../components/MoodIndicator";
 import { SPBarChart } from "../components/charts/SPBarChart";
 import { CategoryDonutChart } from "../components/charts/CategoryDonutChart";
 import { Combobox } from "../components/ui/Combobox";
@@ -219,6 +220,7 @@ function DashboardView({ teamId }: { teamId: string }) {
             <thead>
               <tr className="border-b border-slate-100 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider" style={{ background: "#f8fafc" }}>
                 <th className="py-3 px-4">Member</th>
+                <th className="py-3 px-4 text-center">Mood</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4 text-right">Items</th>
                 <th className="py-3 px-4 text-right">SP</th>
@@ -237,6 +239,7 @@ function DashboardView({ teamId }: { teamId: string }) {
                 return (
                   <InViewRow key={m.memberId} index={i} as="tr" className={`border-b border-slate-50 hover:bg-slate-50/50 ${m.blockedItems > 0 ? "border-l-4 border-l-red-400" : ""}`}>
                     <td className="py-3 px-4 font-medium text-slate-800">{m.memberName}</td>
+                    <td className="py-3 px-4 text-center"><MoodIndicator moodScore={m.moodScore} previousMoodScore={m.previousMoodScore} /></td>
                     <td className="py-3 px-4">
                       {m.commitStatus ? <StatusBadge status={m.commitStatus} /> : <span className="text-slate-400 text-xs">No commit</span>}
                     </td>

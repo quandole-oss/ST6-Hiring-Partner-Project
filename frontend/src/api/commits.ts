@@ -136,6 +136,15 @@ export function useOverrideCommit() {
   });
 }
 
+export function useUpdateMood(commitId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (moodScore: number) =>
+      api.put<WeeklyCommit>(`/commits/${commitId}/mood`, { moodScore }),
+    onSuccess: () => invalidateAll(qc),
+  });
+}
+
 export function useTeamCommits(memberIds: string[], weekStart?: string) {
   const results = useQueries({
     queries: memberIds.map((id) => ({

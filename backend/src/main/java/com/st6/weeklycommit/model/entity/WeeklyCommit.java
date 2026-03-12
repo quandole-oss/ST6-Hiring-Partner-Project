@@ -46,6 +46,9 @@ public class WeeklyCommit {
     @OrderBy("sortOrder ASC")
     private List<CommitItem> items = new ArrayList<>();
 
+    @Column(name = "mood_score")
+    private Integer moodScore;
+
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
     public TeamMember getTeamMember() { return teamMember; }
@@ -62,6 +65,9 @@ public class WeeklyCommit {
     public Instant getUpdatedAt() { return updatedAt; }
     public List<CommitItem> getItems() { return items; }
     public void setItems(List<CommitItem> items) { this.items = items; }
+
+    public Integer getMoodScore() { return moodScore; }
+    public void setMoodScore(Integer moodScore) { this.moodScore = moodScore; }
 
     @PreUpdate
     private void onUpdate() { this.updatedAt = Instant.now(); }
