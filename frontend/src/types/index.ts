@@ -214,3 +214,26 @@ export interface AiQaResponse {
   answer: string;
   generatedAt: string;
 }
+
+export interface HighFive {
+  id: string;
+  giverId: string;
+  giverName: string;
+  receiverTeamId: string;
+  receiverTeamName: string;
+  weekStart: string;
+  message: string;
+  isPublic: boolean;
+  createdAt: string;
+}
+
+export interface RetrospectiveEntry {
+  id: string;
+  teamMemberId: string;
+  weekStart: string;
+  outcomeId: string | null;
+  outcomeTitle: string | null;
+  promptKey: string;
+  response: string;
+  createdAt: string;
+}

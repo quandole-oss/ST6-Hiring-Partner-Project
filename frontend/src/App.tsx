@@ -12,6 +12,7 @@ const PipelinePage = lazy(() => import("./pages/PipelinePage").then(m => ({ defa
 const RcdoPage = lazy(() => import("./pages/RcdoPage").then(m => ({ default: m.RcdoPage })));
 const PersonalAnalyticsPage = lazy(() => import("./pages/PersonalAnalyticsPage").then(m => ({ default: m.PersonalAnalyticsPage })));
 const SettingsPage = lazy(() => import("./pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
+const TeamPulsePage = lazy(() => import("./pages/TeamPulsePage").then(m => ({ default: m.TeamPulsePage })));
 
 function LoadingFallback() {
   return <div className="flex items-center justify-center min-h-screen text-slate-500">Loading...</div>;
@@ -37,6 +38,7 @@ export default function App() {
                   <Route path="/dashboard/:teamId" element={<DashboardPage />} />
                   <Route path="/rcdo" element={<RcdoPage />} />
                   <Route path="/my-analytics" element={<PersonalAnalyticsPage />} />
+                  <Route path="/pulse" element={<TeamPulsePage />} />
                   <Route path="/settings" element={<SettingsPage />} />
                 </Routes>
               </Suspense>
