@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRallyCries } from "../api/rcdo";
+import { useRallyCries, useCreateRallyCry, useCreateObjective, useCreateOutcome } from "../api/rcdo";
 import { useCommitItemsByOutcome } from "../api/outcomeCommits";
 import { ErrorAlert } from "../components/ErrorAlert";
+import { useToast } from "../hooks/useToast";
 
 const CHESS_BG: Record<string, string> = {
   STRATEGIC: "bg-indigo-50 text-indigo-700",
@@ -10,6 +11,62 @@ const CHESS_BG: Record<string, string> = {
   OPERATIONAL: "bg-amber-50 text-amber-700",
   MAINTENANCE: "bg-gray-100 text-gray-600",
 };
+
+function InlineCreateForm({
+  placeholder,
+  onSubmit,
+  onCancel,
+  isPending,
+}: {
+  placeholder: string;
+  onSubmit: (title: string) => void;
+  onCancel: () => void;
+  isPending: boolean;
+}) {
+  const [value, setValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const handleSubmit = () => {
+    const trimmed = value.trim();
+    if (trimmed) onSubmit(trimmed);
+  };
+
+  return (
+    <div className="border-2 border-dashed border-slate-200 rounded-xl p-3 flex items-center gap-2">
+      <input
+        ref={inputRef}
+        type="text"
+        className="flex-1 text-sm px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-st6-teal-500 focus:border-transparent"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") handleSubmit();
+          if (e.key === "Escape") onCancel();
+        }}
+        disabled={isPending}
+      />
+      <button
+        className="text-sm font-medium px-3 py-1.5 rounded-lg bg-st6-teal-700 text-white hover:bg-st6-teal-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        onClick={handleSubmit}
+        disabled={!value.trim() || isPending}
+      >
+        {isPending ? "Saving..." : "Save"}
+      </button>
+      <button
+        className="text-sm font-medium px-3 py-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+        onClick={onCancel}
+        disabled={isPending}
+      >
+        Cancel
+      </button>
+    </div>
+  );
+}
 
 function OutcomeCommitItems({ outcomeId }: { outcomeId: string }) {
   const { data: items, isLoading } = useCommitItemsByOutcome(outcomeId);
@@ -48,6 +105,15 @@ export function RcdoPage() {
   const [expandedRc, setExpandedRc] = useState<Set<string>>(new Set());
   const [expandedObj, setExpandedObj] = useState<Set<string>>(new Set());
 
+  const [showCreateRallyCry, setShowCreateRallyCry] = useState(false);
+  const [addingObjectiveTo, setAddingObjectiveTo] = useState<string | null>(null);
+  const [addingOutcomeTo, setAddingOutcomeTo] = useState<string | null>(null);
+
+  const createRallyCry = useCreateRallyCry();
+  const createObjective = useCreateObjective();
+  const createOutcome = useCreateOutcome();
+  const { addToast } = useToast();
+
   const toggle = (set: Set<string>, id: string, setter: (s: Set<string>) => void) => {
     const next = new Set(set);
     if (next.has(id)) next.delete(id);
@@ -60,12 +126,44 @@ export function RcdoPage() {
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">RCDO Browser</h1>
-        <p className="text-sm text-slate-500 mt-1">Rally Cries &rarr; Defining Objectives &rarr; Outcomes</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">RCDO Browser</h1>
+          <p className="text-sm text-slate-500 mt-1">Rally Cries &rarr; Defining Objectives &rarr; Outcomes</p>
+        </div>
+        {!showCreateRallyCry && (
+          <button
+            className="text-sm font-medium px-4 py-2 rounded-lg bg-st6-teal-700 text-white hover:bg-st6-teal-800 transition-colors flex items-center gap-1.5"
+            onClick={() => setShowCreateRallyCry(true)}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            New Rally Cry
+          </button>
+        )}
       </div>
 
       <div className="space-y-3">
+        {showCreateRallyCry && (
+          <InlineCreateForm
+            placeholder="Rally Cry title..."
+            isPending={createRallyCry.isPending}
+            onCancel={() => setShowCreateRallyCry(false)}
+            onSubmit={(title) => {
+              createRallyCry.mutate({ title }, {
+                onSuccess: () => {
+                  setShowCreateRallyCry(false);
+                  addToast("Rally Cry created");
+                },
+                onError: (err) => {
+                  addToast((err as Error)?.message ?? "Failed to create Rally Cry");
+                },
+              });
+            }}
+          />
+        )}
+
         {rallyCries?.map((rc) => (
           <div
             key={rc.id}
@@ -120,10 +218,70 @@ export function RcdoPage() {
                         {obj.outcomes.length === 0 && (
                           <p className="text-xs text-slate-400 italic">No outcomes defined</p>
                         )}
+
+                        {addingOutcomeTo === obj.id ? (
+                          <InlineCreateForm
+                            placeholder="Outcome title..."
+                            isPending={createOutcome.isPending}
+                            onCancel={() => setAddingOutcomeTo(null)}
+                            onSubmit={(title) => {
+                              createOutcome.mutate({ definingObjectiveId: obj.id, title }, {
+                                onSuccess: () => {
+                                  setAddingOutcomeTo(null);
+                                  addToast("Outcome created");
+                                },
+                                onError: (err) => {
+                                  addToast((err as Error)?.message ?? "Failed to create Outcome");
+                                },
+                              });
+                            }}
+                          />
+                        ) : (
+                          <button
+                            className="text-xs font-medium text-st6-teal-600 hover:text-st6-teal-800 mt-1 flex items-center gap-1 transition-colors"
+                            onClick={() => setAddingOutcomeTo(obj.id)}
+                          >
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Add Outcome
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
                 ))}
+
+                {addingObjectiveTo === rc.id ? (
+                  <InlineCreateForm
+                    placeholder="Defining Objective title..."
+                    isPending={createObjective.isPending}
+                    onCancel={() => setAddingObjectiveTo(null)}
+                    onSubmit={(title) => {
+                      createObjective.mutate({ rallyCryId: rc.id, title }, {
+                        onSuccess: (newObj) => {
+                          setAddingObjectiveTo(null);
+                          addToast("Objective created");
+                          // Auto-expand the new objective
+                          setExpandedObj((prev) => new Set(prev).add(newObj.id));
+                        },
+                        onError: (err) => {
+                          addToast((err as Error)?.message ?? "Failed to create Objective");
+                        },
+                      });
+                    }}
+                  />
+                ) : (
+                  <button
+                    className="text-xs font-medium text-st6-teal-600 hover:text-st6-teal-800 flex items-center gap-1 transition-colors"
+                    onClick={() => setAddingObjectiveTo(rc.id)}
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Add Objective
+                  </button>
+                )}
               </div>
             )}
           </div>

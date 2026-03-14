@@ -38,7 +38,10 @@ export function useCreateObjective() {
   return useMutation({
     mutationFn: (data: { rallyCryId: string; title: string; description?: string }) =>
       api.post<DefiningObjective>("/rcdo/objectives", data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["objectives"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["objectives"] });
+      qc.invalidateQueries({ queryKey: ["rallyCries"] });
+    },
   });
 }
 
@@ -55,6 +58,9 @@ export function useCreateOutcome() {
   return useMutation({
     mutationFn: (data: { definingObjectiveId: string; title: string; description?: string }) =>
       api.post<Outcome>("/rcdo/outcomes", data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["outcomes"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["outcomes"] });
+      qc.invalidateQueries({ queryKey: ["rallyCries"] });
+    },
   });
 }
