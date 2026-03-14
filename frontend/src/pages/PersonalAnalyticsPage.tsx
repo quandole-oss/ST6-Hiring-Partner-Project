@@ -38,7 +38,7 @@ export function PersonalAnalyticsPage() {
       transition={{ duration: 0.4 }}
     >
       {/* Hero Header */}
-      <div className="relative rounded-2xl bg-gradient-to-br from-[#0f4c5c] via-[#1a6b7a] to-[#f57c00] p-8">
+      <div className="relative z-10 rounded-2xl bg-gradient-to-br from-[#0f4c5c] via-[#1a6b7a] to-[#f57c00] p-8">
         <div className="relative z-10">
           <h1 className="text-3xl font-bold text-white">My Analytics</h1>
           <p className="text-white/70 mt-1">Your personal performance insights</p>
