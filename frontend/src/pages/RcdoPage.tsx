@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRallyCries, useCreateRallyCry, useCreateObjective, useCreateOutcome } from "../api/rcdo";
+import { useRallyCries, useCreateRallyCry, useCreateObjective, useCreateOutcome, useDeleteRallyCry, useDeleteObjective, useDeleteOutcome } from "../api/rcdo";
 import { useCommitItemsByOutcome } from "../api/outcomeCommits";
 import { ErrorAlert } from "../components/ErrorAlert";
 import { useToast } from "../hooks/useToast";
@@ -109,9 +109,14 @@ export function RcdoPage() {
   const [addingObjectiveTo, setAddingObjectiveTo] = useState<string | null>(null);
   const [addingOutcomeTo, setAddingOutcomeTo] = useState<string | null>(null);
 
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
   const createRallyCry = useCreateRallyCry();
   const createObjective = useCreateObjective();
   const createOutcome = useCreateOutcome();
+  const deleteRallyCry = useDeleteRallyCry();
+  const deleteObjective = useDeleteObjective();
+  const deleteOutcome = useDeleteOutcome();
   const { addToast } = useToast();
 
   const toggle = (set: Set<string>, id: string, setter: (s: Set<string>) => void) => {
@@ -170,39 +175,105 @@ export function RcdoPage() {
             className="bg-white rounded-2xl border border-slate-100 overflow-hidden transition-all duration-200"
             style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
           >
-            <button
-              className="w-full text-left px-5 py-4 font-semibold text-slate-800 hover:bg-slate-50/80 flex items-center gap-3 transition-colors"
-              onClick={() => toggle(expandedRc, rc.id, setExpandedRc)}
-            >
-              <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${expandedRc.has(rc.id) ? "bg-st6-teal-700 text-white" : "bg-slate-100 text-slate-500"}`}
+            <div className="flex items-center">
+              <button
+                className="flex-1 text-left px-5 py-4 font-semibold text-slate-800 hover:bg-slate-50/80 flex items-center gap-3 transition-colors"
+                onClick={() => toggle(expandedRc, rc.id, setExpandedRc)}
               >
-                <svg className={`w-3 h-3 transition-transform duration-200 ${expandedRc.has(rc.id) ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                </svg>
-              </span>
-              <span className="flex-1">{rc.title}</span>
-              {expandedRc.has(rc.id) && (
-                <span className="text-xs font-medium text-st6-teal-600 bg-st6-teal-50 px-2 py-0.5 rounded-full">
-                  {rc.definingObjectives.length} objectives
+                <span
+                  className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${expandedRc.has(rc.id) ? "bg-st6-teal-700 text-white" : "bg-slate-100 text-slate-500"}`}
+                >
+                  <svg className={`w-3 h-3 transition-transform duration-200 ${expandedRc.has(rc.id) ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                  </svg>
                 </span>
+                <span className="flex-1">{rc.title}</span>
+                {expandedRc.has(rc.id) && (
+                  <span className="text-xs font-medium text-st6-teal-600 bg-st6-teal-50 px-2 py-0.5 rounded-full">
+                    {rc.definingObjectives.length} objectives
+                  </span>
+                )}
+              </button>
+              {confirmDelete === `rc-${rc.id}` ? (
+                <div className="flex items-center gap-1 pr-3">
+                  <button
+                    className="text-xs font-medium px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700 transition-colors"
+                    onClick={() => {
+                      deleteRallyCry.mutate(rc.id, {
+                        onSuccess: () => { setConfirmDelete(null); addToast("Rally Cry deleted"); },
+                        onError: (err) => { setConfirmDelete(null); addToast((err as Error)?.message ?? "Failed to delete"); },
+                      });
+                    }}
+                  >
+                    Confirm
+                  </button>
+                  <button
+                    className="text-xs font-medium px-2 py-1 rounded text-slate-500 hover:bg-slate-100 transition-colors"
+                    onClick={() => setConfirmDelete(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  className="p-2 mr-2 text-slate-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
+                  title="Delete Rally Cry"
+                  onClick={() => setConfirmDelete(`rc-${rc.id}`)}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                  </svg>
+                </button>
               )}
-            </button>
+            </div>
 
             {expandedRc.has(rc.id) && (
               <div className="pl-8 pr-5 pb-4 space-y-3">
                 {rc.description && <p className="text-sm text-slate-500">{rc.description}</p>}
                 {rc.definingObjectives.map((obj) => (
                   <div key={obj.id} className="border-l-2 border-st6-teal-200 pl-4">
-                    <button
-                      className="text-left font-medium text-slate-700 hover:text-st6-teal-700 flex items-center gap-2 transition-colors group"
-                      onClick={() => toggle(expandedObj, obj.id, setExpandedObj)}
-                    >
-                      <svg className={`w-3 h-3 text-slate-400 group-hover:text-st6-teal-500 transition-transform duration-150 ${expandedObj.has(obj.id) ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                      </svg>
-                      {obj.title}
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button
+                        className="text-left font-medium text-slate-700 hover:text-st6-teal-700 flex items-center gap-2 transition-colors group flex-1"
+                        onClick={() => toggle(expandedObj, obj.id, setExpandedObj)}
+                      >
+                        <svg className={`w-3 h-3 text-slate-400 group-hover:text-st6-teal-500 transition-transform duration-150 ${expandedObj.has(obj.id) ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                        {obj.title}
+                      </button>
+                      {confirmDelete === `obj-${obj.id}` ? (
+                        <div className="flex items-center gap-1">
+                          <button
+                            className="text-xs font-medium px-2 py-0.5 rounded bg-red-600 text-white hover:bg-red-700 transition-colors"
+                            onClick={() => {
+                              deleteObjective.mutate(obj.id, {
+                                onSuccess: () => { setConfirmDelete(null); addToast("Objective deleted"); },
+                                onError: (err) => { setConfirmDelete(null); addToast((err as Error)?.message ?? "Failed to delete"); },
+                              });
+                            }}
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            className="text-xs font-medium px-2 py-0.5 rounded text-slate-500 hover:bg-slate-100 transition-colors"
+                            onClick={() => setConfirmDelete(null)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          className="p-1 text-slate-300 hover:text-red-500 transition-colors rounded hover:bg-red-50"
+                          title="Delete Objective"
+                          onClick={() => setConfirmDelete(`obj-${obj.id}`)}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
                     {expandedObj.has(obj.id) && (
                       <div className="ml-5 mt-2 space-y-1.5">
                         {obj.description && <p className="text-xs text-slate-400">{obj.description}</p>}
@@ -210,7 +281,38 @@ export function RcdoPage() {
                           <div key={o.id}>
                             <div className="text-sm text-slate-600 flex items-center gap-2">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0 mt-1.5" />
-                              {o.title}
+                              <span className="flex-1">{o.title}</span>
+                              {confirmDelete === `out-${o.id}` ? (
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    className="text-xs font-medium px-2 py-0.5 rounded bg-red-600 text-white hover:bg-red-700 transition-colors"
+                                    onClick={() => {
+                                      deleteOutcome.mutate(o.id, {
+                                        onSuccess: () => { setConfirmDelete(null); addToast("Outcome deleted"); },
+                                        onError: (err) => { setConfirmDelete(null); addToast((err as Error)?.message ?? "Failed to delete"); },
+                                      });
+                                    }}
+                                  >
+                                    Confirm
+                                  </button>
+                                  <button
+                                    className="text-xs font-medium px-2 py-0.5 rounded text-slate-500 hover:bg-slate-100 transition-colors"
+                                    onClick={() => setConfirmDelete(null)}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  className="p-1 text-slate-300 hover:text-red-500 transition-colors rounded hover:bg-red-50 shrink-0"
+                                  title="Delete Outcome"
+                                  onClick={() => setConfirmDelete(`out-${o.id}`)}
+                                >
+                                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                  </svg>
+                                </button>
+                              )}
                             </div>
                             <OutcomeCommitItems outcomeId={o.id} />
                           </div>

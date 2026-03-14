@@ -50,10 +50,11 @@ export const api = {
   patch: <T>(path: string, body: unknown) =>
     request<T>(path, { method: "PATCH", body: JSON.stringify(body) }),
   delete: (path: string) =>
-    fetch(`${BASE_URL}${path}`, { method: "DELETE", headers: authHeaders() }).then((res) => {
+    fetch(`${BASE_URL}${path}`, { method: "DELETE", headers: authHeaders() }).then(async (res) => {
       if (!res.ok) {
         handle401(res);
-        throw new Error(`Delete failed: ${res.status}`);
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.message ?? body?.detail ?? `Delete failed: ${res.status}`);
       }
     }),
 };

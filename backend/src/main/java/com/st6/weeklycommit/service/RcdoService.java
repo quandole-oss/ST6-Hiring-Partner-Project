@@ -4,11 +4,14 @@ import com.st6.weeklycommit.model.dto.*;
 import com.st6.weeklycommit.model.entity.DefiningObjective;
 import com.st6.weeklycommit.model.entity.Outcome;
 import com.st6.weeklycommit.model.entity.RallyCry;
+import com.st6.weeklycommit.repository.CommitItemRepository;
 import com.st6.weeklycommit.repository.DefiningObjectiveRepository;
 import com.st6.weeklycommit.repository.OutcomeRepository;
 import com.st6.weeklycommit.repository.RallyCryRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,11 +23,13 @@ public class RcdoService {
     private final RallyCryRepository rallyCryRepo;
     private final DefiningObjectiveRepository objectiveRepo;
     private final OutcomeRepository outcomeRepo;
+    private final CommitItemRepository commitItemRepo;
 
-    public RcdoService(RallyCryRepository rallyCryRepo, DefiningObjectiveRepository objectiveRepo, OutcomeRepository outcomeRepo) {
+    public RcdoService(RallyCryRepository rallyCryRepo, DefiningObjectiveRepository objectiveRepo, OutcomeRepository outcomeRepo, CommitItemRepository commitItemRepo) {
         this.rallyCryRepo = rallyCryRepo;
         this.objectiveRepo = objectiveRepo;
         this.outcomeRepo = outcomeRepo;
+        this.commitItemRepo = commitItemRepo;
     }
 
     public List<RallyCryDto> getAllRallyCries() {
@@ -81,7 +86,14 @@ public class RcdoService {
 
     @Transactional
     public void deleteRallyCry(UUID id) {
-        if (!rallyCryRepo.existsById(id)) throw new IllegalArgumentException("Rally cry not found: " + id);
+        var rc = rallyCryRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Rally cry not found: " + id));
+        var outcomeIds = rc.getDefiningObjectives().stream()
+                .flatMap(obj -> obj.getOutcomes().stream())
+                .map(Outcome::getId)
+                .toList();
+        if (!outcomeIds.isEmpty() && commitItemRepo.existsByOutcomeIdIn(outcomeIds)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete Rally Cry because it has outcomes with linked commit items");
+        }
         rallyCryRepo.deleteById(id);
     }
 
@@ -95,7 +107,11 @@ public class RcdoService {
 
     @Transactional
     public void deleteObjective(UUID id) {
-        if (!objectiveRepo.existsById(id)) throw new IllegalArgumentException("Objective not found: " + id);
+        var obj = objectiveRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Objective not found: " + id));
+        var outcomeIds = obj.getOutcomes().stream().map(Outcome::getId).toList();
+        if (!outcomeIds.isEmpty() && commitItemRepo.existsByOutcomeIdIn(outcomeIds)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete Objective because it has outcomes with linked commit items");
+        }
         objectiveRepo.deleteById(id);
     }
 
@@ -110,6 +126,9 @@ public class RcdoService {
     @Transactional
     public void deleteOutcome(UUID id) {
         if (!outcomeRepo.existsById(id)) throw new IllegalArgumentException("Outcome not found: " + id);
+        if (commitItemRepo.existsByOutcomeId(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete Outcome because it has linked commit items");
+        }
         outcomeRepo.deleteById(id);
     }
 

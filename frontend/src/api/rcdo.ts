@@ -33,11 +33,30 @@ export function useObjectives(rallyCryId: string) {
   });
 }
 
+export function useDeleteRallyCry() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/rcdo/rally-cries/${id}`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["rallyCries"] }),
+  });
+}
+
 export function useCreateObjective() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: { rallyCryId: string; title: string; description?: string }) =>
       api.post<DefiningObjective>("/rcdo/objectives", data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["objectives"] });
+      qc.invalidateQueries({ queryKey: ["rallyCries"] });
+    },
+  });
+}
+
+export function useDeleteObjective() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/rcdo/objectives/${id}`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["objectives"] });
       qc.invalidateQueries({ queryKey: ["rallyCries"] });
@@ -58,6 +77,17 @@ export function useCreateOutcome() {
   return useMutation({
     mutationFn: (data: { definingObjectiveId: string; title: string; description?: string }) =>
       api.post<Outcome>("/rcdo/outcomes", data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["outcomes"] });
+      qc.invalidateQueries({ queryKey: ["rallyCries"] });
+    },
+  });
+}
+
+export function useDeleteOutcome() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/rcdo/outcomes/${id}`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["outcomes"] });
       qc.invalidateQueries({ queryKey: ["rallyCries"] });
