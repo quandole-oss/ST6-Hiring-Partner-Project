@@ -18,6 +18,7 @@ interface Props {
   disabled?: boolean;
   searchable?: boolean;
   className?: string;
+  variant?: "default" | "glass";
 }
 
 function getInitials(name: string) {
@@ -55,7 +56,9 @@ export function Combobox({
   disabled,
   searchable = false,
   className = "",
+  variant = "default",
 }: Props) {
+  const isGlass = variant === "glass";
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const ref = useRef<HTMLDivElement>(null);
@@ -98,13 +101,17 @@ export function Combobox({
         disabled={disabled}
         onClick={() => { setOpen((v) => !v); setSearch(""); }}
         className={`w-full flex items-center justify-between gap-2 rounded-xl border px-3.5 py-2.5 text-sm text-left transition-all duration-150 outline-none
-          ${open
-            ? "border-[#145e6e] ring-2 ring-[#145e6e]/20 bg-white"
-            : "border-slate-200 bg-white hover:border-slate-300"
+          ${isGlass
+            ? open
+              ? "bg-white/25 backdrop-blur-sm border-white/50 ring-2 ring-white/20"
+              : "bg-white/20 backdrop-blur-sm border-white/30 hover:bg-white/25"
+            : open
+              ? "border-[#145e6e] ring-2 ring-[#145e6e]/20 bg-white"
+              : "border-slate-200 bg-white hover:border-slate-300"
           }
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         `}
-        style={{ boxShadow: open ? "0 0 0 3px rgba(20,94,110,0.08)" : "0 1px 2px rgba(0,0,0,0.04)" }}
+        style={{ boxShadow: isGlass ? undefined : open ? "0 0 0 3px rgba(20,94,110,0.08)" : "0 1px 2px rgba(0,0,0,0.04)" }}
       >
         <span className="flex items-center gap-2.5 min-w-0">
           {selected ? (
@@ -114,19 +121,19 @@ export function Combobox({
                   {getInitials(selected.label)}
                 </span>
               )}
-              <span className="truncate font-medium text-slate-800">{selected.label}</span>
+              <span className={`truncate font-medium ${isGlass ? "text-white" : "text-slate-800"}`}>{selected.label}</span>
               {selected.sublabel && (
-                <span className="text-xs text-slate-400 truncate">{selected.sublabel}</span>
+                <span className={`text-xs truncate ${isGlass ? "text-white/60" : "text-slate-400"}`}>{selected.sublabel}</span>
               )}
             </>
           ) : (
-            <span className="text-slate-400">{placeholder}</span>
+            <span className={isGlass ? "text-white/50" : "text-slate-400"}>{placeholder}</span>
           )}
         </span>
         <motion.svg
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.2 }}
-          className="w-4 h-4 text-slate-400 shrink-0"
+          className={`w-4 h-4 shrink-0 ${isGlass ? "text-white/60" : "text-slate-400"}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useTeamContext } from "../contexts/TeamContext";
 import { useTeamMembers } from "../api/teams";
 import { usePersonalAnalytics } from "../api/analytics";
+import { Combobox, type ComboboxOption } from "../components/ui/Combobox";
 import { AnimatedNumber } from "../components/animations/AnimatedNumber";
 import { BorderTrailCard } from "../components/animations/BorderTrailCard";
 import { StreakDisplay } from "../components/charts/StreakDisplay";
@@ -24,6 +25,11 @@ export function PersonalAnalyticsPage() {
   const [memberId, setMemberId] = useState("");
   const { data: analytics, isLoading, isError, error } = usePersonalAnalytics(memberId);
 
+  const memberOptions: ComboboxOption[] = useMemo(
+    () => (members ?? []).map((m) => ({ value: m.id, label: m.name, sublabel: m.role || m.email })),
+    [members],
+  );
+
   return (
     <motion.div
       className="p-6 lg:p-8 space-y-6"
@@ -32,21 +38,19 @@ export function PersonalAnalyticsPage() {
       transition={{ duration: 0.4 }}
     >
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f4c5c] via-[#1a6b7a] to-[#f57c00] p-8">
+      <div className="relative rounded-2xl bg-gradient-to-br from-[#0f4c5c] via-[#1a6b7a] to-[#f57c00] p-8">
         <div className="relative z-10">
           <h1 className="text-3xl font-bold text-white">My Analytics</h1>
           <p className="text-white/70 mt-1">Your personal performance insights</p>
-          <div className="mt-4">
-            <select
+          <div className="mt-4 max-w-xs">
+            <Combobox
+              options={memberOptions}
               value={memberId}
-              onChange={(e) => setMemberId(e.target.value)}
-              className="rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 px-4 py-2.5 text-sm text-white placeholder-white/50 focus:ring-2 focus:ring-white/40 outline-none"
-            >
-              <option value="" className="text-slate-800">Select yourself...</option>
-              {members?.map((m) => (
-                <option key={m.id} value={m.id} className="text-slate-800">{m.name}</option>
-              ))}
-            </select>
+              onChange={setMemberId}
+              placeholder="Select yourself..."
+              searchable={memberOptions.length > 5}
+              variant="glass"
+            />
           </div>
         </div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3" />

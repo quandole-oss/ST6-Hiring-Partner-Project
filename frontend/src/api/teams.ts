@@ -14,5 +14,6 @@ export function useTeamMembers(teamId: string) {
     queryKey: ["teams", teamId, "members"],
     queryFn: () => api.get<TeamMember[]>(`/teams/${teamId}/members`),
     enabled: !!teamId,
+    staleTime: 5 * 60 * 1000,
   });
 }
