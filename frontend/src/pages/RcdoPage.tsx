@@ -118,6 +118,7 @@ export function RcdoPage() {
   const deleteObjective = useDeleteObjective();
   const deleteOutcome = useDeleteOutcome();
   const { addToast } = useToast();
+  const isDeleting = deleteRallyCry.isPending || deleteObjective.isPending || deleteOutcome.isPending;
 
   const toggle = (set: Set<string>, id: string, setter: (s: Set<string>) => void) => {
     const next = new Set(set);
@@ -197,7 +198,8 @@ export function RcdoPage() {
               {confirmDelete === `rc-${rc.id}` ? (
                 <div className="flex items-center gap-1 pr-3">
                   <button
-                    className="text-xs font-medium px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700 transition-colors"
+                    className="text-xs font-medium px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    disabled={isDeleting}
                     onClick={() => {
                       deleteRallyCry.mutate(rc.id, {
                         onSuccess: () => { setConfirmDelete(null); addToast("Rally Cry deleted"); },
@@ -205,10 +207,11 @@ export function RcdoPage() {
                       });
                     }}
                   >
-                    Confirm
+                    {deleteRallyCry.isPending ? "Deleting..." : "Confirm"}
                   </button>
                   <button
                     className="text-xs font-medium px-2 py-1 rounded text-slate-500 hover:bg-slate-100 transition-colors"
+                    disabled={isDeleting}
                     onClick={() => setConfirmDelete(null)}
                   >
                     Cancel
@@ -245,7 +248,8 @@ export function RcdoPage() {
                       {confirmDelete === `obj-${obj.id}` ? (
                         <div className="flex items-center gap-1">
                           <button
-                            className="text-xs font-medium px-2 py-0.5 rounded bg-red-600 text-white hover:bg-red-700 transition-colors"
+                            className="text-xs font-medium px-2 py-0.5 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            disabled={isDeleting}
                             onClick={() => {
                               deleteObjective.mutate(obj.id, {
                                 onSuccess: () => { setConfirmDelete(null); addToast("Objective deleted"); },
@@ -253,10 +257,11 @@ export function RcdoPage() {
                               });
                             }}
                           >
-                            Confirm
+                            {deleteObjective.isPending ? "Deleting..." : "Confirm"}
                           </button>
                           <button
                             className="text-xs font-medium px-2 py-0.5 rounded text-slate-500 hover:bg-slate-100 transition-colors"
+                            disabled={isDeleting}
                             onClick={() => setConfirmDelete(null)}
                           >
                             Cancel
@@ -285,7 +290,8 @@ export function RcdoPage() {
                               {confirmDelete === `out-${o.id}` ? (
                                 <div className="flex items-center gap-1">
                                   <button
-                                    className="text-xs font-medium px-2 py-0.5 rounded bg-red-600 text-white hover:bg-red-700 transition-colors"
+                                    className="text-xs font-medium px-2 py-0.5 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    disabled={isDeleting}
                                     onClick={() => {
                                       deleteOutcome.mutate(o.id, {
                                         onSuccess: () => { setConfirmDelete(null); addToast("Outcome deleted"); },
@@ -293,10 +299,11 @@ export function RcdoPage() {
                                       });
                                     }}
                                   >
-                                    Confirm
+                                    {deleteOutcome.isPending ? "Deleting..." : "Confirm"}
                                   </button>
                                   <button
                                     className="text-xs font-medium px-2 py-0.5 rounded text-slate-500 hover:bg-slate-100 transition-colors"
+                                    disabled={isDeleting}
                                     onClick={() => setConfirmDelete(null)}
                                   >
                                     Cancel
