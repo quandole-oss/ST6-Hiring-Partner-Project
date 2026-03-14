@@ -10,6 +10,7 @@ import { PipelineCommitCard } from "../components/PipelineCommitCard";
 import { StatusChangeModal } from "../components/StatusChangeModal";
 import { ErrorAlert } from "../components/ErrorAlert";
 import { useToast } from "../hooks/useToast";
+import { getCurrentMonday, getRecentMondays } from "../utils/week";
 import type { CommitStatus, WeeklyCommit } from "../types";
 
 const STATUSES: CommitStatus[] = ["DRAFT", "LOCKED", "RECONCILING", "RECONCILED", "CARRY_FORWARD"];
@@ -19,12 +20,18 @@ interface PendingDrop {
   toStatus: CommitStatus;
 }
 
+const weekOptions = getRecentMondays(12).map((d) => ({
+  value: d,
+  label: `Week of ${d}`,
+}));
+
 export function PipelinePage() {
   const { data: teams, isLoading: teamsLoading, isError: teamsError, error: teamsErr } = useTeams();
-  const { teamId, setTeamId, weekStart } = useTeamContext();
+  const { teamId, setTeamId } = useTeamContext();
+  const [selectedWeek, setSelectedWeek] = useState(getCurrentMonday);
   const { data: members } = useTeamMembers(teamId);
   const memberIds = members?.map((m) => m.id) ?? [];
-  const { data: allCommits, isLoading: commitsLoading } = useTeamCommits(memberIds, weekStart);
+  const { data: allCommits, isLoading: commitsLoading } = useTeamCommits(memberIds, selectedWeek);
   const overrideCommit = useOverrideCommit();
   const { addToast } = useToast();
   const [pendingDrop, setPendingDrop] = useState<PendingDrop | null>(null);
@@ -80,16 +87,26 @@ export function PipelinePage() {
         <p className="text-sm text-slate-500 mt-1">Drag commits between status columns. All moves are audit-logged.</p>
       </div>
 
-      {/* Team selector */}
-      <div className="max-w-xs">
-        <Combobox
-          label="Team"
-          options={(teams ?? []).map((t) => ({ value: t.id, label: t.name }))}
-          value={teamId}
-          onChange={setTeamId}
-          placeholder="Select a team..."
-          searchable={(teams ?? []).length > 5}
-        />
+      {/* Filters */}
+      <div className="flex items-end gap-4 flex-wrap">
+        <div className="w-56">
+          <Combobox
+            label="Team"
+            options={(teams ?? []).map((t) => ({ value: t.id, label: t.name }))}
+            value={teamId}
+            onChange={setTeamId}
+            placeholder="Select a team..."
+            searchable={(teams ?? []).length > 5}
+          />
+        </div>
+        <div className="w-56">
+          <Combobox
+            label="Week"
+            options={weekOptions}
+            value={selectedWeek}
+            onChange={setSelectedWeek}
+          />
+        </div>
       </div>
 
       {teamId && (

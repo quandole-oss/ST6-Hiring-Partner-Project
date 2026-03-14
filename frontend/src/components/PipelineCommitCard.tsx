@@ -38,14 +38,11 @@ export function PipelineCommitCard({ commit, isPending, onClick }: Props) {
       layout
       onClick={onClick}
     >
-      <div className="flex items-start justify-between gap-2 mb-2">
+      <div className="flex items-start justify-between gap-2 mb-2.5">
         <span className="text-sm font-semibold text-slate-800 leading-tight truncate">
           {commit.teamMemberName}
         </span>
         <StatusBadge status={commit.status} />
-      </div>
-      <div className="text-xs text-slate-400 mb-2.5">
-        Week of {commit.weekStart}
       </div>
       <div className="flex items-center gap-2 flex-wrap">
         <span className="inline-flex items-center gap-1 text-xs text-slate-500 bg-slate-50 rounded-full px-2 py-0.5 border border-slate-100">
