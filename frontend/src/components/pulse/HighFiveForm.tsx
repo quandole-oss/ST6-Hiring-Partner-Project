@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useTeams } from "../../api/teams";
+import { useTeams, useTeamMembers } from "../../api/teams";
 import { useCreateHighFive } from "../../api/pulse";
 import { useTeamContext } from "../../contexts/TeamContext";
 import { useToast } from "../../hooks/useToast";
+
+type RecipientType = "team" | "person";
 
 export function HighFiveForm() {
   const { weekStart } = useTeamContext();
@@ -11,41 +13,112 @@ export function HighFiveForm() {
   const createHighFive = useCreateHighFive();
   const { addToast } = useToast();
 
-  const [receiverTeamId, setReceiverTeamId] = useState("");
+  const [recipientType, setRecipientType] = useState<RecipientType>("person");
+  const [selectedTeamId, setSelectedTeamId] = useState("");
+  const [selectedMemberId, setSelectedMemberId] = useState("");
   const [message, setMessage] = useState("");
   const [isPublic, setIsPublic] = useState(true);
 
+  const { data: members } = useTeamMembers(selectedTeamId);
+
+  const isValid =
+    recipientType === "team"
+      ? !!selectedTeamId && !!message.trim()
+      : !!selectedMemberId && !!message.trim();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!receiverTeamId || !message.trim()) return;
-    createHighFive.mutate(
-      { receiverTeamId, weekStart, message: message.trim(), isPublic },
-      {
-        onSuccess: () => {
-          addToast("High five sent!");
-          setMessage("");
-          setReceiverTeamId("");
-        },
-        onError: (err) => addToast((err as Error).message),
-      }
-    );
+    if (!isValid) return;
+
+    const payload =
+      recipientType === "team"
+        ? { receiverTeamId: selectedTeamId, weekStart, message: message.trim(), isPublic }
+        : { receiverMemberId: selectedMemberId, weekStart, message: message.trim(), isPublic };
+
+    createHighFive.mutate(payload, {
+      onSuccess: () => {
+        addToast("High five sent!");
+        setMessage("");
+        setSelectedTeamId("");
+        setSelectedMemberId("");
+      },
+      onError: (err) => addToast((err as Error).message),
+    });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">Team</label>
-        <select
-          value={receiverTeamId}
-          onChange={(e) => setReceiverTeamId(e.target.value)}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f4c5c]/30 focus:border-[#0f4c5c] outline-none"
+      {/* Recipient type toggle */}
+      <div className="flex rounded-lg border border-slate-200 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => { setRecipientType("person"); setSelectedTeamId(""); setSelectedMemberId(""); }}
+          className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+            recipientType === "person"
+              ? "bg-[#0f4c5c] text-white"
+              : "bg-white text-slate-500 hover:text-slate-700"
+          }`}
         >
-          <option value="">Select a team...</option>
-          {teams?.map((t) => (
-            <option key={t.id} value={t.id}>{t.name}</option>
-          ))}
-        </select>
+          Person
+        </button>
+        <button
+          type="button"
+          onClick={() => { setRecipientType("team"); setSelectedMemberId(""); }}
+          className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${
+            recipientType === "team"
+              ? "bg-[#0f4c5c] text-white"
+              : "bg-white text-slate-500 hover:text-slate-700"
+          }`}
+        >
+          Team
+        </button>
       </div>
+
+      {recipientType === "team" ? (
+        <div>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Team</label>
+          <select
+            value={selectedTeamId}
+            onChange={(e) => setSelectedTeamId(e.target.value)}
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f4c5c]/30 focus:border-[#0f4c5c] outline-none"
+          >
+            <option value="">Select a team...</option>
+            {teams?.map((t) => (
+              <option key={t.id} value={t.id}>{t.name}</option>
+            ))}
+          </select>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Team</label>
+            <select
+              value={selectedTeamId}
+              onChange={(e) => { setSelectedTeamId(e.target.value); setSelectedMemberId(""); }}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f4c5c]/30 focus:border-[#0f4c5c] outline-none"
+            >
+              <option value="">Select a team...</option>
+              {teams?.map((t) => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Person</label>
+            <select
+              value={selectedMemberId}
+              onChange={(e) => setSelectedMemberId(e.target.value)}
+              disabled={!selectedTeamId}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f4c5c]/30 focus:border-[#0f4c5c] outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value="">{selectedTeamId ? "Select a person..." : "Select a team first"}</option>
+              {members?.map((m) => (
+                <option key={m.id} value={m.id}>{m.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
 
       <div>
         <label className="block text-xs font-medium text-slate-600 mb-1">Message</label>
@@ -79,7 +152,7 @@ export function HighFiveForm() {
 
         <motion.button
           type="submit"
-          disabled={!receiverTeamId || !message.trim() || createHighFive.isPending}
+          disabled={!isValid || createHighFive.isPending}
           className="px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ background: "linear-gradient(135deg, #0f4c5c, #1a6b7a)" }}
           whileHover={{ scale: 1.02 }}

@@ -32,7 +32,9 @@ export function HighFivesFeed({ weekStart }: Props) {
                 <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
                   <span className="font-medium text-slate-700">{hf.giverName}</span>
                   <span>gave</span>
-                  <span className="font-medium text-[#0f4c5c]">{hf.receiverTeamName}</span>
+                  <span className="font-medium text-[#0f4c5c]">
+                    {hf.receiverMemberName ?? hf.receiverTeamName}
+                  </span>
                   <span>a high five</span>
                   {!hf.isPublic && (
                     <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

@@ -13,7 +13,7 @@ export function useHighFives(weekStart: string) {
 export function useCreateHighFive() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: { receiverTeamId: string; weekStart: string; message: string; isPublic: boolean }) =>
+    mutationFn: (data: { receiverTeamId?: string; receiverMemberId?: string; weekStart: string; message: string; isPublic: boolean }) =>
       api.post<HighFive>("/pulse/high-fives", data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["highFives"] }),
   });

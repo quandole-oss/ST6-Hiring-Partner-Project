@@ -221,6 +221,8 @@ export interface HighFive {
   giverName: string;
   receiverTeamId: string;
   receiverTeamName: string;
+  receiverMemberId: string | null;
+  receiverMemberName: string | null;
   weekStart: string;
   message: string;
   isPublic: boolean;

@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(name = "high_five", uniqueConstraints = @UniqueConstraint(columnNames = {"giver_id", "receiver_team_id", "week_start"}))
+@Table(name = "high_five")
 public class HighFive {
 
     @Id
@@ -20,6 +20,10 @@ public class HighFive {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_team_id", nullable = false)
     private Team receiverTeam;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_member_id")
+    private TeamMember receiverMember;
 
     @Column(name = "week_start", nullable = false)
     private LocalDate weekStart;
@@ -42,6 +46,8 @@ public class HighFive {
     public void setGiver(TeamMember giver) { this.giver = giver; }
     public Team getReceiverTeam() { return receiverTeam; }
     public void setReceiverTeam(Team receiverTeam) { this.receiverTeam = receiverTeam; }
+    public TeamMember getReceiverMember() { return receiverMember; }
+    public void setReceiverMember(TeamMember receiverMember) { this.receiverMember = receiverMember; }
     public LocalDate getWeekStart() { return weekStart; }
     public void setWeekStart(LocalDate weekStart) { this.weekStart = weekStart; }
     public String getMessage() { return message; }

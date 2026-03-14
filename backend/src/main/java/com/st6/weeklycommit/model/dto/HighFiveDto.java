@@ -10,6 +10,8 @@ public record HighFiveDto(
     String giverName,
     UUID receiverTeamId,
     String receiverTeamName,
+    UUID receiverMemberId,
+    String receiverMemberName,
     LocalDate weekStart,
     String message,
     boolean isPublic,

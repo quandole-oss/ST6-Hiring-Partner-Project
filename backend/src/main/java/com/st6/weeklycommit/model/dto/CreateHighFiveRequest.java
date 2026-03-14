@@ -7,7 +7,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record CreateHighFiveRequest(
-    @NotNull UUID receiverTeamId,
+    UUID receiverTeamId,
+    UUID receiverMemberId,
     @NotNull LocalDate weekStart,
     @NotBlank String message,
     @NotNull Boolean isPublic

@@ -14,9 +14,17 @@ public interface HighFiveRepository extends JpaRepository<HighFive, UUID> {
 
     List<HighFive> findByWeekStart(LocalDate weekStart);
 
-    Optional<HighFive> findByGiverIdAndReceiverTeamIdAndWeekStart(UUID giverId, UUID receiverTeamId, LocalDate weekStart);
+    @Query("SELECT h FROM HighFive h WHERE h.giver.id = :giverId AND h.receiverTeam.id = :receiverTeamId " +
+           "AND h.weekStart = :weekStart AND h.receiverMember IS NULL")
+    Optional<HighFive> findByGiverIdAndReceiverTeamIdAndWeekStart(
+        @Param("giverId") UUID giverId,
+        @Param("receiverTeamId") UUID receiverTeamId,
+        @Param("weekStart") LocalDate weekStart
+    );
 
-    @Query("SELECT h FROM HighFive h LEFT JOIN FETCH h.giver g LEFT JOIN FETCH h.receiverTeam " +
+    Optional<HighFive> findByGiverIdAndReceiverMemberIdAndWeekStart(UUID giverId, UUID receiverMemberId, LocalDate weekStart);
+
+    @Query("SELECT h FROM HighFive h LEFT JOIN FETCH h.giver g LEFT JOIN FETCH h.receiverTeam LEFT JOIN FETCH h.receiverMember " +
            "WHERE h.weekStart = :weekStart AND (h.isPublic = true OR g.id = :currentMemberId OR g.team.id = :currentTeamId)")
     List<HighFive> findVisibleForWeek(
         @Param("weekStart") LocalDate weekStart,

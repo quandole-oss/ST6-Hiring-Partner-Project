@@ -30,27 +30,61 @@ public class TeamPulseService {
 
     @Transactional
     public HighFiveDto createHighFive(UUID currentMemberId, CreateHighFiveRequest req) {
+        if (req.receiverTeamId() == null && req.receiverMemberId() == null) {
+            throw new IllegalArgumentException("Either receiverTeamId or receiverMemberId must be provided");
+        }
+
         var giver = memberRepo.findById(currentMemberId)
             .orElseThrow(() -> new IllegalArgumentException("Team member not found: " + currentMemberId));
-        var receiverTeam = teamRepo.findById(req.receiverTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Team not found: " + req.receiverTeamId()));
 
-        // Upsert: if already exists for this giver/team/week, update it
-        var existing = highFiveRepo.findByGiverIdAndReceiverTeamIdAndWeekStart(currentMemberId, req.receiverTeamId(), req.weekStart());
-        HighFive hf;
-        if (existing.isPresent()) {
-            hf = existing.get();
-            hf.setMessage(req.message());
-            hf.setPublic(req.isPublic());
+        TeamMember receiverMember = null;
+        Team receiverTeam;
+
+        if (req.receiverMemberId() != null) {
+            // Individual high five
+            receiverMember = memberRepo.findById(req.receiverMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("Team member not found: " + req.receiverMemberId()));
+            receiverTeam = receiverMember.getTeam();
+
+            var existing = highFiveRepo.findByGiverIdAndReceiverMemberIdAndWeekStart(
+                currentMemberId, req.receiverMemberId(), req.weekStart());
+            HighFive hf;
+            if (existing.isPresent()) {
+                hf = existing.get();
+                hf.setMessage(req.message());
+                hf.setPublic(req.isPublic());
+            } else {
+                hf = new HighFive();
+                hf.setGiver(giver);
+                hf.setReceiverTeam(receiverTeam);
+                hf.setReceiverMember(receiverMember);
+                hf.setWeekStart(req.weekStart());
+                hf.setMessage(req.message());
+                hf.setPublic(req.isPublic());
+            }
+            return toDto(highFiveRepo.save(hf));
         } else {
-            hf = new HighFive();
-            hf.setGiver(giver);
-            hf.setReceiverTeam(receiverTeam);
-            hf.setWeekStart(req.weekStart());
-            hf.setMessage(req.message());
-            hf.setPublic(req.isPublic());
+            // Team high five
+            receiverTeam = teamRepo.findById(req.receiverTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Team not found: " + req.receiverTeamId()));
+
+            var existing = highFiveRepo.findByGiverIdAndReceiverTeamIdAndWeekStart(
+                currentMemberId, req.receiverTeamId(), req.weekStart());
+            HighFive hf;
+            if (existing.isPresent()) {
+                hf = existing.get();
+                hf.setMessage(req.message());
+                hf.setPublic(req.isPublic());
+            } else {
+                hf = new HighFive();
+                hf.setGiver(giver);
+                hf.setReceiverTeam(receiverTeam);
+                hf.setWeekStart(req.weekStart());
+                hf.setMessage(req.message());
+                hf.setPublic(req.isPublic());
+            }
+            return toDto(highFiveRepo.save(hf));
         }
-        return toDto(highFiveRepo.save(hf));
     }
 
     public List<HighFiveDto> getHighFives(java.time.LocalDate weekStart, UUID currentMemberId, UUID currentTeamId) {
@@ -109,6 +143,8 @@ public class TeamPulseService {
             hf.getGiver().getName(),
             hf.getReceiverTeam().getId(),
             hf.getReceiverTeam().getName(),
+            hf.getReceiverMember() != null ? hf.getReceiverMember().getId() : null,
+            hf.getReceiverMember() != null ? hf.getReceiverMember().getName() : null,
             hf.getWeekStart(),
             hf.getMessage(),
             hf.isPublic(),
