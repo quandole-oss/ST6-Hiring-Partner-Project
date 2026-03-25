@@ -7,31 +7,33 @@
 -- We'll use this expression inline.
 
 -- ============================================================
--- 0. Clean up stale seed data from V2/V10
+-- 0. Clean up ALL existing commit data for seed team members
 -- ============================================================
 DELETE FROM reconciliation WHERE commit_item_id IN (
-    SELECT id FROM commit_item WHERE weekly_commit_id IN (
-        SELECT id FROM weekly_commit WHERE id IN (
-            'f0000000-0000-0000-0000-000000000001',
-            'f0000000-0000-0000-0000-000000000002',
-            'f0000000-0000-0000-0000-000000000003',
-            'f0000000-0000-0000-0000-000000000004'
-        )
+    SELECT ci.id FROM commit_item ci
+    JOIN weekly_commit wc ON ci.weekly_commit_id = wc.id
+    WHERE wc.team_member_id IN (
+        'e0000000-0000-0000-0000-000000000001',
+        'e0000000-0000-0000-0000-000000000002',
+        'e0000000-0000-0000-0000-000000000003',
+        'e0000000-0000-0000-0000-000000000004'
     )
 );
 
 DELETE FROM commit_item WHERE weekly_commit_id IN (
-    'f0000000-0000-0000-0000-000000000001',
-    'f0000000-0000-0000-0000-000000000002',
-    'f0000000-0000-0000-0000-000000000003',
-    'f0000000-0000-0000-0000-000000000004'
+    SELECT id FROM weekly_commit WHERE team_member_id IN (
+        'e0000000-0000-0000-0000-000000000001',
+        'e0000000-0000-0000-0000-000000000002',
+        'e0000000-0000-0000-0000-000000000003',
+        'e0000000-0000-0000-0000-000000000004'
+    )
 );
 
-DELETE FROM weekly_commit WHERE id IN (
-    'f0000000-0000-0000-0000-000000000001',
-    'f0000000-0000-0000-0000-000000000002',
-    'f0000000-0000-0000-0000-000000000003',
-    'f0000000-0000-0000-0000-000000000004'
+DELETE FROM weekly_commit WHERE team_member_id IN (
+    'e0000000-0000-0000-0000-000000000001',
+    'e0000000-0000-0000-0000-000000000002',
+    'e0000000-0000-0000-0000-000000000003',
+    'e0000000-0000-0000-0000-000000000004'
 );
 
 -- Also clean up any existing high fives / retrospective entries for demo members
