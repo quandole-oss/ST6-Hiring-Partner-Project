@@ -1,54 +1,54 @@
 -- V15__rich_demo_seed.sql
 -- Populate dashboard with rich, realistic demo data for a live walkthrough.
 -- All weekly commits use CURRENT_DATE to target the current ISO week.
+-- Uses email lookups for team members to handle Google OAuth UUIDs.
 
 -- Helper: current Monday
 -- ISODOW: Monday=1..Sunday=7, so Monday = CURRENT_DATE - (ISODOW - 1)
--- We'll use this expression inline.
 
 -- ============================================================
--- 0. Clean up ALL existing commit data for seed team members
+-- 0. Clean up ALL existing commit data for seed team members (by email)
 -- ============================================================
 DELETE FROM reconciliation WHERE commit_item_id IN (
     SELECT ci.id FROM commit_item ci
     JOIN weekly_commit wc ON ci.weekly_commit_id = wc.id
     WHERE wc.team_member_id IN (
-        'e0000000-0000-0000-0000-000000000001',
-        'e0000000-0000-0000-0000-000000000002',
-        'e0000000-0000-0000-0000-000000000003',
-        'e0000000-0000-0000-0000-000000000004'
+        SELECT id FROM team_member WHERE email IN (
+            'alice@example.com', 'bob@example.com',
+            'carol@example.com', 'quan.le@challenger.gauntletai.com'
+        )
     )
 );
 
 DELETE FROM commit_item WHERE weekly_commit_id IN (
-    SELECT id FROM weekly_commit WHERE team_member_id IN (
-        'e0000000-0000-0000-0000-000000000001',
-        'e0000000-0000-0000-0000-000000000002',
-        'e0000000-0000-0000-0000-000000000003',
-        'e0000000-0000-0000-0000-000000000004'
+    SELECT wc.id FROM weekly_commit wc
+    WHERE wc.team_member_id IN (
+        SELECT id FROM team_member WHERE email IN (
+            'alice@example.com', 'bob@example.com',
+            'carol@example.com', 'quan.le@challenger.gauntletai.com'
+        )
     )
 );
 
 DELETE FROM weekly_commit WHERE team_member_id IN (
-    'e0000000-0000-0000-0000-000000000001',
-    'e0000000-0000-0000-0000-000000000002',
-    'e0000000-0000-0000-0000-000000000003',
-    'e0000000-0000-0000-0000-000000000004'
+    SELECT id FROM team_member WHERE email IN (
+        'alice@example.com', 'bob@example.com',
+        'carol@example.com', 'quan.le@challenger.gauntletai.com'
+    )
 );
 
--- Also clean up any existing high fives / retrospective entries for demo members
 DELETE FROM high_five WHERE giver_id IN (
-    'e0000000-0000-0000-0000-000000000001',
-    'e0000000-0000-0000-0000-000000000002',
-    'e0000000-0000-0000-0000-000000000003',
-    'e0000000-0000-0000-0000-000000000004'
+    SELECT id FROM team_member WHERE email IN (
+        'alice@example.com', 'bob@example.com',
+        'carol@example.com', 'quan.le@challenger.gauntletai.com'
+    )
 );
 
 DELETE FROM retrospective_entry WHERE team_member_id IN (
-    'e0000000-0000-0000-0000-000000000001',
-    'e0000000-0000-0000-0000-000000000002',
-    'e0000000-0000-0000-0000-000000000003',
-    'e0000000-0000-0000-0000-000000000004'
+    SELECT id FROM team_member WHERE email IN (
+        'alice@example.com', 'bob@example.com',
+        'carol@example.com', 'quan.le@challenger.gauntletai.com'
+    )
 );
 
 -- ============================================================
@@ -58,7 +58,7 @@ DELETE FROM retrospective_entry WHERE team_member_id IN (
 -- Alice - previous week (RECONCILED)
 INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score, locked_at, reconciled_at) VALUES
     ('f1000000-0000-0000-0000-000000000001',
-     'e0000000-0000-0000-0000-000000000001',
+     (SELECT id FROM team_member WHERE email = 'alice@example.com'),
      (CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1)) - 7,
      'RECONCILED', 3,
      (CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1)) - 5,
@@ -67,7 +67,7 @@ INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score, l
 -- Bob - previous week (RECONCILED)
 INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score, locked_at, reconciled_at) VALUES
     ('f1000000-0000-0000-0000-000000000002',
-     'e0000000-0000-0000-0000-000000000002',
+     (SELECT id FROM team_member WHERE email = 'bob@example.com'),
      (CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1)) - 7,
      'RECONCILED', 4,
      (CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1)) - 5,
@@ -76,7 +76,7 @@ INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score, l
 -- Carol - previous week (RECONCILED)
 INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score, locked_at, reconciled_at) VALUES
     ('f1000000-0000-0000-0000-000000000003',
-     'e0000000-0000-0000-0000-000000000003',
+     (SELECT id FROM team_member WHERE email = 'carol@example.com'),
      (CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1)) - 7,
      'RECONCILED', 5,
      (CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1)) - 5,
@@ -85,7 +85,7 @@ INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score, l
 -- Quan - previous week (RECONCILED)
 INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score, locked_at, reconciled_at) VALUES
     ('f1000000-0000-0000-0000-000000000004',
-     'e0000000-0000-0000-0000-000000000004',
+     (SELECT id FROM team_member WHERE email = 'quan.le@challenger.gauntletai.com'),
      (CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1)) - 7,
      'RECONCILED', 3,
      (CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1)) - 5,
@@ -120,7 +120,7 @@ INSERT INTO reconciliation (id, commit_item_id, completion_status, actual_story_
 -- ============================================================
 INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score, locked_at) VALUES
     ('f0000000-0000-0000-0000-000000000001',
-     'e0000000-0000-0000-0000-000000000001',
+     (SELECT id FROM team_member WHERE email = 'alice@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'LOCKED', 4,
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1) + 1);
@@ -162,7 +162,7 @@ INSERT INTO reconciliation (id, commit_item_id, completion_status, actual_story_
 -- ============================================================
 INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score, locked_at) VALUES
     ('f0000000-0000-0000-0000-000000000002',
-     'e0000000-0000-0000-0000-000000000002',
+     (SELECT id FROM team_member WHERE email = 'bob@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'LOCKED', 3,
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1) + 1);
@@ -200,7 +200,7 @@ INSERT INTO reconciliation (id, commit_item_id, completion_status, actual_story_
 -- ============================================================
 INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score) VALUES
     ('f0000000-0000-0000-0000-000000000003',
-     'e0000000-0000-0000-0000-000000000003',
+     (SELECT id FROM team_member WHERE email = 'carol@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'DRAFT', 5);
 
@@ -234,7 +234,7 @@ INSERT INTO commit_item (id, weekly_commit_id, outcome_id, title, description, c
 -- ============================================================
 INSERT INTO weekly_commit (id, team_member_id, week_start, status, mood_score, locked_at) VALUES
     ('f0000000-0000-0000-0000-000000000004',
-     'e0000000-0000-0000-0000-000000000004',
+     (SELECT id FROM team_member WHERE email = 'quan.le@challenger.gauntletai.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'RECONCILING', 4,
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1) + 1);
@@ -270,30 +270,30 @@ INSERT INTO reconciliation (id, commit_item_id, completion_status, actual_story_
 -- ============================================================
 INSERT INTO high_five (id, giver_id, receiver_team_id, receiver_member_id, week_start, message, is_public) VALUES
     ('30000000-0000-0000-0000-000000000001',
-     'e0000000-0000-0000-0000-000000000004',  -- Quan gives
-     'd0000000-0000-0000-0000-000000000001',  -- Platform Squad
-     'e0000000-0000-0000-0000-000000000001',  -- to Alice
+     (SELECT id FROM team_member WHERE email = 'quan.le@challenger.gauntletai.com'),
+     'd0000000-0000-0000-0000-000000000001',
+     (SELECT id FROM team_member WHERE email = 'alice@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'Amazing work on the setup wizard! The usability test results were really insightful. Ship it!',
      true),
     ('30000000-0000-0000-0000-000000000002',
-     'e0000000-0000-0000-0000-000000000001',  -- Alice gives
-     'd0000000-0000-0000-0000-000000000001',  -- Platform Squad
-     'e0000000-0000-0000-0000-000000000002',  -- to Bob
+     (SELECT id FROM team_member WHERE email = 'alice@example.com'),
+     'd0000000-0000-0000-0000-000000000001',
+     (SELECT id FROM team_member WHERE email = 'bob@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'Feature flag SDK integration was seamless. Great API design and documentation.',
      true),
     ('30000000-0000-0000-0000-000000000003',
-     'e0000000-0000-0000-0000-000000000002',  -- Bob gives
-     'd0000000-0000-0000-0000-000000000001',  -- Platform Squad
-     'e0000000-0000-0000-0000-000000000003',  -- to Carol
+     (SELECT id FROM team_member WHERE email = 'bob@example.com'),
+     'd0000000-0000-0000-0000-000000000001',
+     (SELECT id FROM team_member WHERE email = 'carol@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'The onboarding email copy is fantastic — clear, friendly, and on-brand. Users are going to love it.',
      true),
     ('30000000-0000-0000-0000-000000000004',
-     'e0000000-0000-0000-0000-000000000003',  -- Carol gives
-     'd0000000-0000-0000-0000-000000000001',  -- Platform Squad
-     'e0000000-0000-0000-0000-000000000004',  -- to Quan
+     (SELECT id FROM team_member WHERE email = 'carol@example.com'),
+     'd0000000-0000-0000-0000-000000000001',
+     (SELECT id FROM team_member WHERE email = 'quan.le@challenger.gauntletai.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'The wiki IA is incredibly well thought out. The tag taxonomy will save everyone so much time.',
      true);
@@ -305,13 +305,13 @@ INSERT INTO high_five (id, giver_id, receiver_team_id, receiver_member_id, week_
 INSERT INTO retrospective_entry (id, team_member_id, week_start, outcome_id, prompt_key, response) VALUES
     -- Alice
     ('40000000-0000-0000-0000-000000000001',
-     'e0000000-0000-0000-0000-000000000001',
+     (SELECT id FROM team_member WHERE email = 'alice@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'c0000000-0000-0000-0000-000000000001',
      'what_went_well',
      'Setup wizard steps 1-2 shipped ahead of schedule. Usability tests revealed key insights about optional fields that will improve conversion.'),
     ('40000000-0000-0000-0000-000000000002',
-     'e0000000-0000-0000-0000-000000000001',
+     (SELECT id FROM team_member WHERE email = 'alice@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      NULL,
      'what_to_improve',
@@ -319,13 +319,13 @@ INSERT INTO retrospective_entry (id, team_member_id, week_start, outcome_id, pro
 
     -- Bob
     ('40000000-0000-0000-0000-000000000003',
-     'e0000000-0000-0000-0000-000000000002',
+     (SELECT id FROM team_member WHERE email = 'bob@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'c0000000-0000-0000-0000-000000000004',
      'what_went_well',
      'Feature flag SDK came together cleanly. The provider pattern made React integration straightforward.'),
     ('40000000-0000-0000-0000-000000000004',
-     'e0000000-0000-0000-0000-000000000002',
+     (SELECT id FROM team_member WHERE email = 'bob@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      NULL,
      'what_to_improve',
@@ -333,13 +333,13 @@ INSERT INTO retrospective_entry (id, team_member_id, week_start, outcome_id, pro
 
     -- Carol
     ('40000000-0000-0000-0000-000000000005',
-     'e0000000-0000-0000-0000-000000000003',
+     (SELECT id FROM team_member WHERE email = 'carol@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'c0000000-0000-0000-0000-000000000002',
      'what_went_well',
      'Email sequence writing is flowing well. Got great feedback from marketing on tone and CTAs.'),
     ('40000000-0000-0000-0000-000000000006',
-     'e0000000-0000-0000-0000-000000000003',
+     (SELECT id FROM team_member WHERE email = 'carol@example.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      NULL,
      'what_to_improve',
@@ -347,13 +347,13 @@ INSERT INTO retrospective_entry (id, team_member_id, week_start, outcome_id, pro
 
     -- Quan
     ('40000000-0000-0000-0000-000000000007',
-     'e0000000-0000-0000-0000-000000000004',
+     (SELECT id FROM team_member WHERE email = 'quan.le@challenger.gauntletai.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      'c0000000-0000-0000-0000-000000000007',
      'what_went_well',
      'Wiki IA design got buy-in from all teams. The tag taxonomy approach was well-received and should scale.'),
     ('40000000-0000-0000-0000-000000000008',
-     'e0000000-0000-0000-0000-000000000004',
+     (SELECT id FROM team_member WHERE email = 'quan.le@challenger.gauntletai.com'),
      CURRENT_DATE - (EXTRACT(ISODOW FROM CURRENT_DATE)::int - 1),
      NULL,
      'what_to_improve',
