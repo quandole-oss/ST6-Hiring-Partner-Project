@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useCallback, type FormEvent } from "react";
+import { Navigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../contexts/AuthContext";
 import { motion } from "framer-motion";
@@ -7,29 +7,31 @@ import { motion } from "framer-motion";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 export function LoginPage() {
-  const { login, googleLogin } = useAuth();
-  const navigate = useNavigate();
+  const { user, login, googleLogin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
+    async (e: FormEvent) => {
       e.preventDefault();
       setError(null);
       setLoading(true);
       try {
         await login(email, password);
-        navigate("/");
       } catch {
         setError("Invalid email or password. Please try again.");
       } finally {
         setLoading(false);
       }
     },
-    [email, password, login, navigate]
+    [email, password, login]
   );
+
+  // Once user state is set, redirect to dashboard declaratively.
+  // Placed after hooks to respect React's rules of hooks.
+  if (user) return <Navigate to="/" replace />;
 
   async function handleGoogleSuccess(credentialResponse: { credential?: string }) {
     if (!credentialResponse.credential) return;
@@ -37,7 +39,6 @@ export function LoginPage() {
     setLoading(true);
     try {
       await googleLogin(credentialResponse.credential);
-      navigate("/");
     } catch {
       setError("Google login failed. Please try again.");
     } finally {

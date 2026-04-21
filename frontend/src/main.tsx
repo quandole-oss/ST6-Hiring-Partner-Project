@@ -14,7 +14,15 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { staleTime: 30_000, retry: 1 },
+    queries: {
+      staleTime: 30_000,
+      retry: (failureCount, error) => {
+        if (error instanceof Error && (error.message.includes("401") || error.message.includes("403"))) {
+          return false;
+        }
+        return failureCount < 1;
+      },
+    },
   },
 });
 

@@ -1,25 +1,32 @@
+import { getToken } from "./tokenStore";
+
 const BASE_URL = "/api/v1";
-const STORAGE_KEY = "wc_auth";
 const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
+
+let onUnauthorized: (() => void) | null = null;
+let redirecting = false;
+
+export function setOnUnauthorized(cb: () => void) {
+  onUnauthorized = cb;
+}
 
 function authHeaders(): Record<string, string> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (DEMO_MODE) return headers;
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    const { token } = JSON.parse(stored);
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-  }
+  const token = getToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
   return headers;
 }
 
 function handle401(res: Response) {
   if (DEMO_MODE) return;
   if (res.status === 401) {
-    localStorage.removeItem(STORAGE_KEY);
-    if (window.location.pathname !== "/login") {
-      window.location.href = "/login";
+    if (redirecting) return;
+    redirecting = true;
+    if (onUnauthorized) {
+      onUnauthorized();
     }
+    setTimeout(() => { redirecting = false; }, 2000);
   }
 }
 

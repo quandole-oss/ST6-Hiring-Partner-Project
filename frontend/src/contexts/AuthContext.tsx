@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { setToken, loadTokenFromStorage } from "../api/tokenStore";
+import { setOnUnauthorized } from "../api/client";
 
 interface AuthState {
   token: string;
@@ -30,9 +32,17 @@ const DEMO_USER: AuthState = {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthState | null>(() => {
     if (DEMO_MODE) return DEMO_USER;
+    loadTokenFromStorage();
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : null;
   });
+
+  useEffect(() => {
+    setOnUnauthorized(() => {
+      setToken(null);
+      setUser(null);
+    });
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -52,6 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error("Invalid credentials");
     }
     const data = await res.json();
+    setToken(data.token);
     setUser({ token: data.token, memberId: data.memberId, name: data.name, role: data.role });
   }, []);
 
@@ -65,10 +76,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error("Google login failed");
     }
     const data = await res.json();
+    setToken(data.token);
     setUser({ token: data.token, memberId: data.memberId, name: data.name, role: data.role });
   }, []);
 
   const logout = useCallback(() => {
+    setToken(null);
     setUser(null);
   }, []);
 
