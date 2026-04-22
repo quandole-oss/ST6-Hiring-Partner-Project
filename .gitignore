@@ -21,3 +21,13 @@ frontend/*.tsbuildinfo
 .DS_Store
 Thumbs.db
 .claude/worktrees/
+.claude/settings.local.json
+
+# Planning work in progress (scratch, debug sessions)
+.planning/debug/
+
+# Test artifacts
+/tmp/
+playwright-report/
+test-results/
+
