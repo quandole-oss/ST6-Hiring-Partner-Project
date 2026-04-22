@@ -1,0 +1,23 @@
+{
+  "id": "07-team-summary",
+  "method": "GET",
+  "path": "/dashboard/team/{teamId}/summary",
+  "status": 200,
+  "shape": {
+    "t": "object",
+    "fields": {
+      "generatedAt": {
+        "t": "string"
+      },
+      "summary": {
+        "t": "string"
+      },
+      "teamId": {
+        "t": "string"
+      },
+      "teamName": {
+        "t": "string"
+      }
+    }
+  }
+}

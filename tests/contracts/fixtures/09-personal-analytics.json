@@ -1,0 +1,105 @@
+{
+  "id": "09-personal-analytics",
+  "method": "GET",
+  "path": "/analytics/personal/{aliceId}",
+  "status": 200,
+  "shape": {
+    "t": "object",
+    "fields": {
+      "busiestDays": {
+        "t": "array",
+        "element": {
+          "t": "object",
+          "fields": {
+            "count": {
+              "t": "number"
+            },
+            "day": {
+              "t": "string"
+            }
+          }
+        }
+      },
+      "categoryBreakdown": {
+        "t": "array",
+        "element": {
+          "t": "object",
+          "fields": {
+            "category": {
+              "t": "string"
+            },
+            "itemCount": {
+              "t": "number"
+            },
+            "storyPoints": {
+              "t": "number"
+            }
+          }
+        }
+      },
+      "memberId": {
+        "t": "string"
+      },
+      "memberName": {
+        "t": "string"
+      },
+      "outputTrend": {
+        "t": "array",
+        "element": {
+          "t": "object",
+          "fields": {
+            "itemCount": {
+              "t": "number"
+            },
+            "status": {
+              "t": "string"
+            },
+            "storyPoints": {
+              "t": "number"
+            },
+            "weekStart": {
+              "t": "string"
+            }
+          }
+        }
+      },
+      "streak": {
+        "t": "object",
+        "fields": {
+          "currentStreak": {
+            "t": "number"
+          },
+          "lastTwelveWeeks": {
+            "t": "array",
+            "element": {
+              "t": "boolean"
+            }
+          },
+          "longestStreak": {
+            "t": "number"
+          }
+        }
+      },
+      "summary": {
+        "t": "object",
+        "fields": {
+          "avgStoryPointsPerWeek": {
+            "t": "number"
+          },
+          "completionRate": {
+            "t": "number"
+          },
+          "totalItems": {
+            "t": "number"
+          },
+          "totalStoryPoints": {
+            "t": "number"
+          },
+          "totalWeeks": {
+            "t": "number"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "12-export-settings",
+  "method": "GET",
+  "path": "/export/team/{teamId}/settings",
+  "status": 200,
+  "shape": {
+    "t": "object",
+    "fields": {
+      "defaultEmailRecipients": {
+        "t": "null"
+      },
+      "id": {
+        "t": "null"
+      },
+      "slackWebhookUrl": {
+        "t": "null"
+      },
+      "teamId": {
+        "t": "string"
+      }
+    }
+  }
+}

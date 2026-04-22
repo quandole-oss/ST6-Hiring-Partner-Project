@@ -1,0 +1,54 @@
+{
+  "id": "10-commit-audit-log",
+  "method": "GET",
+  "path": "/commits/{commitId}/audit-log",
+  "status": 200,
+  "shape": {
+    "t": "array",
+    "element": {
+      "t": "object",
+      "fields": {
+        "actionType": {
+          "t": "string"
+        },
+        "commitId": {
+          "t": "string"
+        },
+        "commitItemId": {
+          "t": "null"
+        },
+        "commitItemTitle": {
+          "t": "null"
+        },
+        "createdAt": {
+          "t": "string"
+        },
+        "id": {
+          "t": "string"
+        },
+        "isManualOverride": {
+          "t": "boolean"
+        },
+        "newState": {
+          "t": "string"
+        },
+        "newValue": {
+          "t": "null"
+        },
+        "notes": {
+          "t": "null"
+        },
+        "oldValue": {
+          "t": "null"
+        },
+        "previousState": {
+          "t": "string"
+        },
+        "triggeredBy": {
+          "t": "string"
+        }
+      }
+    }
+  },
+  "arrayLengthAtCapture": 1
+}

@@ -1,0 +1,48 @@
+{
+  "id": "13-pulse-high-fives",
+  "method": "GET",
+  "path": "/pulse/high-fives?weekStart={weekStart}",
+  "status": 200,
+  "shape": {
+    "t": "array",
+    "element": {
+      "t": "object",
+      "fields": {
+        "createdAt": {
+          "t": "string"
+        },
+        "giverId": {
+          "t": "string"
+        },
+        "giverName": {
+          "t": "string"
+        },
+        "id": {
+          "t": "string"
+        },
+        "isPublic": {
+          "t": "boolean"
+        },
+        "message": {
+          "t": "string"
+        },
+        "receiverMemberId": {
+          "t": "string"
+        },
+        "receiverMemberName": {
+          "t": "string"
+        },
+        "receiverTeamId": {
+          "t": "string"
+        },
+        "receiverTeamName": {
+          "t": "string"
+        },
+        "weekStart": {
+          "t": "string"
+        }
+      }
+    }
+  },
+  "arrayLengthAtCapture": 4
+}

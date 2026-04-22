@@ -1,0 +1,39 @@
+{
+  "id": "14-pulse-retros",
+  "method": "GET",
+  "path": "/pulse/retrospectives?weekStart={weekStart}",
+  "status": 200,
+  "shape": {
+    "t": "array",
+    "element": {
+      "t": "object",
+      "fields": {
+        "createdAt": {
+          "t": "string"
+        },
+        "id": {
+          "t": "string"
+        },
+        "outcomeId": {
+          "t": "string"
+        },
+        "outcomeTitle": {
+          "t": "string"
+        },
+        "promptKey": {
+          "t": "string"
+        },
+        "response": {
+          "t": "string"
+        },
+        "teamMemberId": {
+          "t": "string"
+        },
+        "weekStart": {
+          "t": "string"
+        }
+      }
+    }
+  },
+  "arrayLengthAtCapture": 2
+}

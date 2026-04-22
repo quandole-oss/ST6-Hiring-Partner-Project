@@ -1,0 +1,23 @@
+{
+  "id": "03-dashboard-align",
+  "method": "GET",
+  "path": "/dashboard/alignment",
+  "status": 200,
+  "shape": {
+    "t": "object",
+    "fields": {
+      "linkedItems": {
+        "t": "number"
+      },
+      "overallAlignment": {
+        "t": "number"
+      },
+      "totalItems": {
+        "t": "number"
+      },
+      "unlinkedItems": {
+        "t": "number"
+      }
+    }
+  }
+}

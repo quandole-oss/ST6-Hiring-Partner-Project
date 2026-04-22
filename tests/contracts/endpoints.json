@@ -1,0 +1,30 @@
+{
+  "description": "Contract snapshot targets for the regression harness. These 15 endpoints were verified live against the Railway deploy and cover every major feature surface.",
+  "base": "https://aware-adaptation-production-9167.up.railway.app/api/v1",
+  "authLogin": "/auth/login",
+  "credentials": { "email": "alice@example.com", "password": "password123" },
+  "demoIds": {
+    "teamId": "d0000000-0000-0000-0000-000000000001",
+    "aliceId": "e0000000-0000-0000-0000-000000000001",
+    "outcomeId": "c0000000-0000-0000-0000-000000000001",
+    "commitId": "f1000000-0000-0000-0000-000000000001",
+    "weekStart": "2026-04-20"
+  },
+  "endpoints": [
+    { "id": "01-auth-health",       "method": "GET",  "path": "/auth/health",                                              "auth": false, "shapeOnly": false },
+    { "id": "02-dashboard-team",    "method": "GET",  "path": "/dashboard/team/{teamId}",                                   "auth": true,  "shapeOnly": true },
+    { "id": "03-dashboard-align",   "method": "GET",  "path": "/dashboard/alignment",                                       "auth": true,  "shapeOnly": true },
+    { "id": "04-rcdo-rallycries",   "method": "GET",  "path": "/rcdo/rally-cries",                                          "auth": true,  "shapeOnly": true },
+    { "id": "05-commits-by-member", "method": "GET",  "path": "/commits?teamMemberId={aliceId}",                            "auth": true,  "shapeOnly": true },
+    { "id": "06-blocked-items",     "method": "GET",  "path": "/dashboard/team/{teamId}/blocked-items",                     "auth": true,  "shapeOnly": true },
+    { "id": "07-team-summary",      "method": "GET",  "path": "/dashboard/team/{teamId}/summary",                           "auth": true,  "shapeOnly": true },
+    { "id": "08-team-members",      "method": "GET",  "path": "/teams/{teamId}/members",                                    "auth": true,  "shapeOnly": true },
+    { "id": "09-personal-analytics","method": "GET",  "path": "/analytics/personal/{aliceId}",                              "auth": true,  "shapeOnly": true },
+    { "id": "10-commit-audit-log",  "method": "GET",  "path": "/commits/{commitId}/audit-log",                              "auth": true,  "shapeOnly": true },
+    { "id": "11-commits-by-outcome","method": "GET",  "path": "/commits/by-outcome/{outcomeId}",                            "auth": true,  "shapeOnly": true },
+    { "id": "12-export-settings",   "method": "GET",  "path": "/export/team/{teamId}/settings",                             "auth": true,  "shapeOnly": true },
+    { "id": "13-pulse-high-fives",  "method": "GET",  "path": "/pulse/high-fives?weekStart={weekStart}",                    "auth": true,  "shapeOnly": true },
+    { "id": "14-pulse-retros",      "method": "GET",  "path": "/pulse/retrospectives?weekStart={weekStart}",                "auth": true,  "shapeOnly": true },
+    { "id": "15-spa-root",          "method": "GET",  "path": "/",                                                          "baseOverride": "https://aware-adaptation-production-9167.up.railway.app", "auth": false, "shapeOnly": false, "expectHtml": true }
+  ]
+}

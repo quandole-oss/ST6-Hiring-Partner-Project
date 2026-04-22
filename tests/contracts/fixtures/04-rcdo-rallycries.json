@@ -1,0 +1,67 @@
+{
+  "id": "04-rcdo-rallycries",
+  "method": "GET",
+  "path": "/rcdo/rally-cries",
+  "status": 200,
+  "shape": {
+    "t": "array",
+    "element": {
+      "t": "object",
+      "fields": {
+        "createdAt": {
+          "t": "string"
+        },
+        "definingObjectives": {
+          "t": "array",
+          "element": {
+            "t": "object",
+            "fields": {
+              "description": {
+                "t": "string"
+              },
+              "id": {
+                "t": "string"
+              },
+              "outcomes": {
+                "t": "array",
+                "element": {
+                  "t": "object",
+                  "fields": {
+                    "definingObjectiveId": {
+                      "t": "string"
+                    },
+                    "description": {
+                      "t": "string"
+                    },
+                    "id": {
+                      "t": "string"
+                    },
+                    "title": {
+                      "t": "string"
+                    }
+                  }
+                }
+              },
+              "rallyCryId": {
+                "t": "string"
+              },
+              "title": {
+                "t": "string"
+              }
+            }
+          }
+        },
+        "description": {
+          "t": "string"
+        },
+        "id": {
+          "t": "string"
+        },
+        "title": {
+          "t": "string"
+        }
+      }
+    }
+  },
+  "arrayLengthAtCapture": 2
+}

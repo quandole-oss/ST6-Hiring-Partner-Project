@@ -1,0 +1,30 @@
+{
+  "id": "08-team-members",
+  "method": "GET",
+  "path": "/teams/{teamId}/members",
+  "status": 200,
+  "shape": {
+    "t": "array",
+    "element": {
+      "t": "object",
+      "fields": {
+        "email": {
+          "t": "string"
+        },
+        "id": {
+          "t": "string"
+        },
+        "name": {
+          "t": "string"
+        },
+        "role": {
+          "t": "string"
+        },
+        "teamId": {
+          "t": "string"
+        }
+      }
+    }
+  },
+  "arrayLengthAtCapture": 4
+}

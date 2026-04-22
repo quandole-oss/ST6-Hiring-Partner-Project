@@ -1,0 +1,14 @@
+{
+  "id": "01-auth-health",
+  "method": "GET",
+  "path": "/auth/health",
+  "status": 200,
+  "shape": {
+    "t": "object",
+    "fields": {
+      "status": {
+        "t": "string"
+      }
+    }
+  }
+}

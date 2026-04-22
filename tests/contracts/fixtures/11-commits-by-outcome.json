@@ -1,0 +1,80 @@
+{
+  "id": "11-commits-by-outcome",
+  "method": "GET",
+  "path": "/commits/by-outcome/{outcomeId}",
+  "status": 200,
+  "shape": {
+    "t": "array",
+    "element": {
+      "t": "object",
+      "fields": {
+        "carryForwardCount": {
+          "t": "number"
+        },
+        "chessCategory": {
+          "t": "string"
+        },
+        "description": {
+          "t": "null"
+        },
+        "effortEstimate": {
+          "t": "number"
+        },
+        "flaggedStale": {
+          "t": "boolean"
+        },
+        "id": {
+          "t": "string"
+        },
+        "impactEstimate": {
+          "t": "number"
+        },
+        "outcomeId": {
+          "t": "string"
+        },
+        "outcomeTitle": {
+          "t": "string"
+        },
+        "reconciliation": {
+          "t": "object",
+          "fields": {
+            "actualStoryPoints": {
+              "t": "number"
+            },
+            "commitItemId": {
+              "t": "string"
+            },
+            "completionStatus": {
+              "t": "string"
+            },
+            "id": {
+              "t": "string"
+            },
+            "notes": {
+              "t": "string"
+            }
+          }
+        },
+        "riskFlag": {
+          "t": "null"
+        },
+        "riskFlaggedAt": {
+          "t": "null"
+        },
+        "riskNote": {
+          "t": "null"
+        },
+        "sortOrder": {
+          "t": "number"
+        },
+        "title": {
+          "t": "string"
+        },
+        "weeklyCommitId": {
+          "t": "string"
+        }
+      }
+    }
+  },
+  "arrayLengthAtCapture": 4
+}

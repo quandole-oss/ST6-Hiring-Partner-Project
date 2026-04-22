@@ -1,0 +1,84 @@
+{
+  "id": "02-dashboard-team",
+  "method": "GET",
+  "path": "/dashboard/team/{teamId}",
+  "status": 200,
+  "shape": {
+    "t": "object",
+    "fields": {
+      "categoryBreakdown": {
+        "t": "object",
+        "fields": {
+          "MAINTENANCE": {
+            "t": "number"
+          },
+          "OPERATIONAL": {
+            "t": "number"
+          },
+          "STRATEGIC": {
+            "t": "number"
+          },
+          "TACTICAL": {
+            "t": "number"
+          }
+        }
+      },
+      "members": {
+        "t": "array",
+        "element": {
+          "t": "object",
+          "fields": {
+            "alignmentScore": {
+              "t": "number"
+            },
+            "atRiskItems": {
+              "t": "number"
+            },
+            "blockedItems": {
+              "t": "number"
+            },
+            "commitStatus": {
+              "t": "string"
+            },
+            "completedItems": {
+              "t": "number"
+            },
+            "completedStoryPoints": {
+              "t": "number"
+            },
+            "completionRate": {
+              "t": "number"
+            },
+            "memberId": {
+              "t": "string"
+            },
+            "memberName": {
+              "t": "string"
+            },
+            "moodScore": {
+              "t": "number"
+            },
+            "partialItems": {
+              "t": "number"
+            },
+            "previousMoodScore": {
+              "t": "number"
+            },
+            "totalItems": {
+              "t": "number"
+            },
+            "totalStoryPoints": {
+              "t": "number"
+            }
+          }
+        }
+      },
+      "teamId": {
+        "t": "string"
+      },
+      "teamName": {
+        "t": "string"
+      }
+    }
+  }
+}

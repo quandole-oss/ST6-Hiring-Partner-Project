@@ -1,0 +1,39 @@
+{
+  "id": "06-blocked-items",
+  "method": "GET",
+  "path": "/dashboard/team/{teamId}/blocked-items",
+  "status": 200,
+  "shape": {
+    "t": "array",
+    "element": {
+      "t": "object",
+      "fields": {
+        "commitId": {
+          "t": "string"
+        },
+        "itemId": {
+          "t": "string"
+        },
+        "itemTitle": {
+          "t": "string"
+        },
+        "memberId": {
+          "t": "string"
+        },
+        "memberName": {
+          "t": "string"
+        },
+        "riskFlag": {
+          "t": "string"
+        },
+        "riskFlaggedAt": {
+          "t": "string"
+        },
+        "riskNote": {
+          "t": "string"
+        }
+      }
+    }
+  },
+  "arrayLengthAtCapture": 2
+}
