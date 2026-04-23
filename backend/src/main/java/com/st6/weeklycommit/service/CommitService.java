@@ -4,6 +4,8 @@ import com.st6.weeklycommit.model.dto.*;
 import com.st6.weeklycommit.model.entity.*;
 import com.st6.weeklycommit.repository.*;
 import com.st6.weeklycommit.statemachine.CommitLifecycleService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +43,16 @@ public class CommitService {
 
     public WeeklyCommitDto getCommit(UUID id) {
         return toDto(findCommit(id));
+    }
+
+    /**
+     * Paginated listing of weekly commits. Spec requires Spring Data Pageable
+     * support on list endpoints for team views up to ~2000 records. Exposed
+     * via CommitController#listCommitsPage as an additive endpoint so existing
+     * List-returning callers are unaffected.
+     */
+    public Page<WeeklyCommitDto> listCommitsPage(Pageable pageable) {
+        return commitRepo.findAll(pageable).map(this::toDto);
     }
 
     @Transactional

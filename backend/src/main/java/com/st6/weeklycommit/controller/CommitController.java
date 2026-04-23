@@ -6,6 +6,8 @@ import com.st6.weeklycommit.service.CommitService;
 import com.st6.weeklycommit.service.ReconciliationService;
 import com.st6.weeklycommit.statemachine.CommitLifecycleService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,18 @@ public class CommitController {
             @RequestParam UUID teamMemberId,
             @RequestParam(required = false) LocalDate weekStart) {
         return commitService.listCommits(teamMemberId, weekStart);
+    }
+
+    /**
+     * Paginated weekly-commit listing. Added to satisfy the spec's pagination
+     * requirement (Spring Data Pageable, team views up to ~2000 records)
+     * without breaking existing consumers of the non-paginated endpoint.
+     *
+     * Usage: GET /api/v1/commits/page?page=0&size=20&sort=weekStart,desc
+     */
+    @GetMapping("/page")
+    public Page<WeeklyCommitDto> listCommitsPage(Pageable pageable) {
+        return commitService.listCommitsPage(pageable);
     }
 
     @GetMapping("/{id}")
