@@ -4,12 +4,11 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "reconciliation")
-public class Reconciliation {
+public class Reconciliation extends AbstractAuditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,12 +28,6 @@ public class Reconciliation {
     @Column(name = "actual_story_points")
     private Integer actualStoryPoints;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt = Instant.now();
-
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
     public CommitItem getCommitItem() { return commitItem; }
@@ -45,9 +38,4 @@ public class Reconciliation {
     public void setNotes(String notes) { this.notes = notes; }
     public Integer getActualStoryPoints() { return actualStoryPoints; }
     public void setActualStoryPoints(Integer actualStoryPoints) { this.actualStoryPoints = actualStoryPoints; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
-
-    @PreUpdate
-    private void onUpdate() { this.updatedAt = Instant.now(); }
 }

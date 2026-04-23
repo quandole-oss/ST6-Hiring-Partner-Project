@@ -8,6 +8,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     css: false,
+    exclude: ["node_modules/**", "e2e/**", "dist/**"],
   },
   resolve: {
     alias: {

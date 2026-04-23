@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "commit_item")
-public class CommitItem {
+public class CommitItem extends AbstractAuditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -57,12 +57,6 @@ public class CommitItem {
     @Column(name = "sort_order", nullable = false)
     private int sortOrder;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt = Instant.now();
-
     @OneToOne(mappedBy = "commitItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private Reconciliation reconciliation;
 
@@ -94,11 +88,6 @@ public class CommitItem {
     public void setFlaggedStale(boolean flaggedStale) { this.flaggedStale = flaggedStale; }
     public int getSortOrder() { return sortOrder; }
     public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
     public Reconciliation getReconciliation() { return reconciliation; }
     public void setReconciliation(Reconciliation reconciliation) { this.reconciliation = reconciliation; }
-
-    @PreUpdate
-    private void onUpdate() { this.updatedAt = Instant.now(); }
 }

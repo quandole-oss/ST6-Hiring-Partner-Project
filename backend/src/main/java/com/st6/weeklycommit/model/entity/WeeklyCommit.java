@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "weekly_commit", uniqueConstraints = @UniqueConstraint(columnNames = {"team_member_id", "week_start"}))
-public class WeeklyCommit {
+public class WeeklyCommit extends AbstractAuditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,12 +36,6 @@ public class WeeklyCommit {
     @Column(name = "reconciled_at")
     private Instant reconciledAt;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt = Instant.now();
-
     @OneToMany(mappedBy = "weeklyCommit", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC")
     private List<CommitItem> items = new ArrayList<>();
@@ -61,14 +55,9 @@ public class WeeklyCommit {
     public void setLockedAt(Instant lockedAt) { this.lockedAt = lockedAt; }
     public Instant getReconciledAt() { return reconciledAt; }
     public void setReconciledAt(Instant reconciledAt) { this.reconciledAt = reconciledAt; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
     public List<CommitItem> getItems() { return items; }
     public void setItems(List<CommitItem> items) { this.items = items; }
 
     public Integer getMoodScore() { return moodScore; }
     public void setMoodScore(Integer moodScore) { this.moodScore = moodScore; }
-
-    @PreUpdate
-    private void onUpdate() { this.updatedAt = Instant.now(); }
 }
