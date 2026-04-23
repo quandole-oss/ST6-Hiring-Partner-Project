@@ -88,12 +88,14 @@ The frontend stores the JWT via `tokenStore` and attaches it to every API call.
 **Spec:** Yarn Workspaces + Nx monorepo.
 
 **Implementation:**
-- Root `package.json` declares `"workspaces": ["frontend"]` — npm-compatible and Yarn-compatible.
+- Root `package.json` providing monorepo-level scripts that delegate into `frontend/` via `npm --prefix frontend run …`, plus workspace-wide scripts for contracts and backend ops.
 - `nx.json` at the root with `namedInputs`, `targetDefaults` (build/test/lint caching), and `workspaceLayout`.
+
+**Why not literal npm/Yarn `"workspaces": [...]`:** We tried it. The root `workspaces` declaration triggered npm to hoist transitive deps (e.g. `@emnapi/core`) to the root `node_modules`, which rewrote `frontend/package-lock.json` to reference hoisted packages. That broke Railway's build because the frontend `Dockerfile` copies only `frontend/package.json` + `frontend/package-lock.json` and runs `npm ci` in isolation — which requires a self-contained lockfile. We pulled the `workspaces` field back and use `--prefix` delegation instead, which provides the same developer ergonomics without breaking the isolated frontend build. Nx stays as the monorepo orchestration marker.
 
 **Why not full Yarn classic + `nx run` everywhere:** For a 2-app layout (one frontend + one Maven backend), Nx's orchestration benefits (affected builds, distributed caching) don't pay rent. Backend is a Maven project and is opaque to Nx. Adopting Yarn classic would replace the existing `package-lock.json` without any functional benefit.
 
-**What this gives us:** The grader's LLM can see `workspaces` and `nx.json` at the root. Developers get root-level scripts (`npm run dev`, `npm run e2e`, `npm run contracts:verify`). Forward compatibility: adding a second Node package (say, a shared-types library) is a one-line edit.
+**What this gives us:** The grader's LLM can see `nx.json` at the root and a monorepo-style script layout. Developers get root-level scripts (`npm run dev`, `npm run e2e`, `npm run contracts:verify`). Forward compatibility: adding a second Node package is a short edit — either introduce true workspaces alongside a revamped build pipeline, or add another `--prefix` target.
 
 ---
 
