@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Button as FlowbiteButton } from "flowbite-react";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../contexts/AuthContext";
@@ -201,7 +202,11 @@ export function SettingsPage() {
             <Row
               label="Sign out"
               description="End your current session"
-              action={<Button variant="danger" size="sm" onClick={logout}>Sign Out</Button>}
+              action={
+                <FlowbiteButton color="red" size="xs" onClick={logout}>
+                  Sign Out
+                </FlowbiteButton>
+              }
             />
           </Card>
         </motion.div>
