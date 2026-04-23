@@ -1,7 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
+import { defineBddConfig } from "playwright-bdd";
 
 /**
- * Playwright config for the weekly-commit-module e2e smoke suite.
+ * Playwright config for the weekly-commit-module e2e suite.
+ *
+ * - plain Playwright specs in ./e2e/*.spec.ts
+ * - Cucumber/Gherkin BDD features in ./e2e/features/*.feature compiled
+ *   to tests via playwright-bdd and written to ./e2e/.bdd-gen/
  *
  * Default baseURL points at the live Railway deploy so the suite runs
  * without needing a local docker-compose up. Override with E2E_BASE_URL
@@ -9,6 +14,12 @@ import { defineConfig, devices } from "@playwright/test";
  */
 
 const baseURL = process.env.E2E_BASE_URL || "https://aware-adaptation-production-9167.up.railway.app";
+
+const bddTestDir = defineBddConfig({
+  features: "./e2e/features/**/*.feature",
+  steps: "./e2e/steps/**/*.ts",
+  outputDir: "./e2e/.bdd-gen",
+});
 
 export default defineConfig({
   testDir: "./e2e",
@@ -30,6 +41,14 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      testDir: "./e2e",
+      testMatch: /.*\.spec\.ts$/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "bdd",
+      testDir: bddTestDir,
+      testMatch: /.*\.spec\.js$/,
       use: { ...devices["Desktop Chrome"] },
     },
   ],

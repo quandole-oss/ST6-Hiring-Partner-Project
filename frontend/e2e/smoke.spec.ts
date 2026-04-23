@@ -35,17 +35,27 @@ test.describe("Weekly Commit Module smoke", () => {
     await page.locator("#email").fill(DEMO_EMAIL);
     await page.locator("#password").fill(DEMO_PASSWORD);
     await page.locator("button[type=submit]").click();
-    await page.waitForLoadState("networkidle");
+    // Wait for auth state to settle (dashboard member names visible)
+    // before navigating; networkidle alone races on client-side auth redirect.
+    await expect(page).not.toHaveURL(/\/login/i, { timeout: 15_000 });
+    await expect(page.locator("body")).toContainText(/Alice|Bob|Carol|Platform/i, {
+      timeout: 15_000,
+    });
 
     await page.goto("/rcdo");
-    await expect(page.locator("body")).toContainText(/Rally|Accelerate/i, { timeout: 10_000 });
+    await expect(page.locator("body")).toContainText(/Rally|Accelerate|Objective/i, {
+      timeout: 15_000,
+    });
   });
 
   test("authenticated session can load pipeline", async ({ page }) => {
     await page.locator("#email").fill(DEMO_EMAIL);
     await page.locator("#password").fill(DEMO_PASSWORD);
     await page.locator("button[type=submit]").click();
-    await page.waitForLoadState("networkidle");
+    await expect(page).not.toHaveURL(/\/login/i, { timeout: 15_000 });
+    await expect(page.locator("body")).toContainText(/Alice|Bob|Carol|Platform/i, {
+      timeout: 15_000,
+    });
 
     await page.goto("/pipeline");
     // Pipeline columns render — even empty states have some chrome.

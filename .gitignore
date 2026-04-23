@@ -30,4 +30,7 @@ Thumbs.db
 /tmp/
 playwright-report/
 test-results/
+frontend/playwright-report/
+frontend/test-results/
+frontend/e2e/.bdd-gen/
 
