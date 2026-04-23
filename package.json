@@ -1,0 +1,27 @@
+{
+  "name": "st6-weekly-commit-module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ST6 Weekly Commit Module — micro-frontend weekly-commit tracker (Spring Boot + React)",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=frontend",
+    "test": "npm run test:run --workspace=frontend",
+    "e2e": "npm run e2e --workspace=frontend",
+    "bdd": "npm run bdd --workspace=frontend",
+    "lint": "npm run lint --workspace=frontend",
+    "format": "npm run format --workspace=frontend",
+    "format:check": "npm run format:check --workspace=frontend",
+    "contracts:capture": "node tests/contracts/run.mjs --mode=capture",
+    "contracts:verify": "node tests/contracts/run.mjs --mode=verify",
+    "backend:build": "docker build -t weekly-commit-backend:local backend",
+    "backend:up": "docker compose up -d --build",
+    "backend:down": "docker compose down"
+  },
+  "devDependencies": {
+    "nx": "^20.2.0"
+  }
+}
