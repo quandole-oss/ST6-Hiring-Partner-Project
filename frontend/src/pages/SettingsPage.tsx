@@ -3,6 +3,7 @@ import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../hooks/useToast";
+import { useGetCommitsPageQuery } from "../store/commitsApi";
 
 const stagger = {
   hidden: {},
@@ -41,6 +42,11 @@ function SectionTitle({ title }: { title: string }) {
 export function SettingsPage() {
   const { user, logout } = useAuth();
   const { addToast } = useToast();
+
+  // RTK Query parallel data layer — paginated commits stats.
+  // See DECISIONS.md / docs/adr for the incremental RTK Query adoption plan.
+  const { data: commitsPage } = useGetCommitsPageQuery({ page: 0, size: 1 });
+  const totalCommits = commitsPage?.totalElements;
 
   const soon = () => addToast("Coming soon");
 
@@ -174,6 +180,14 @@ export function SettingsPage() {
         <motion.div variants={fadeUp}>
           <SectionTitle title="Data & Privacy" />
           <Card>
+            <Row
+              label="Total commits tracked"
+              description={
+                typeof totalCommits === "number"
+                  ? `${totalCommits} weekly commit records in this workspace`
+                  : "Fetching…"
+              }
+            />
             <Row
               label="Export my data"
               description="Download all your data as JSON"
